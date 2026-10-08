@@ -1,1892 +1,588 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Finance Forward — Your money. Your choices. Your future.</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<style>
-:root{
-  --burgundy:#6B1F2B;
-  --burgundy-dark:#42131B;
-  --beige:#F4EBDD;
-  --beige-light:#FBF7F0;
-  --rose:#A66A6A;
-  --ink:#2A1015;
-  --gain:#4F7A5B;
-  --loss:#B44A3A;
-  --gold:#C9A227;
-  --line:rgba(107,31,43,.14);
-  --shadow-sm:0 1px 2px rgba(66,19,27,.06), 0 4px 12px rgba(66,19,27,.06);
-  --shadow-md:0 2px 4px rgba(66,19,27,.07), 0 12px 32px rgba(66,19,27,.10);
-  --shadow-lg:0 8px 16px rgba(66,19,27,.10), 0 32px 64px rgba(66,19,27,.16);
-  --r:20px;
-  --display:'Bricolage Grotesque',system-ui,sans-serif;
-  --body:'Instrument Sans',system-ui,sans-serif;
-  --mono:'JetBrains Mono',ui-monospace,monospace;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{
-  font-family:var(--body);
-  background:var(--beige-light);
-  color:var(--ink);
-  -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
-}
-button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
-button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--rose);outline-offset:3px;border-radius:6px}
-.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
-
-/* ---------- shared ---------- */
-.screen{display:none;min-height:100vh}
-.screen.on{display:block;animation:fadeUp .5s cubic-bezier(.2,.7,.3,1) both}
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes pop{0%{transform:scale(.86);opacity:0}60%{transform:scale(1.03)}100%{transform:scale(1);opacity:1}}
-.wrap{max-width:1280px;margin:0 auto;padding:0 32px}
-
-.btn{
-  display:inline-flex;align-items:center;gap:10px;
-  background:var(--burgundy);color:var(--beige-light);
-  font-family:var(--display);font-weight:700;letter-spacing:.02em;
-  font-size:16px;padding:16px 30px;border-radius:100px;
-  box-shadow:0 4px 0 var(--burgundy-dark), var(--shadow-md);
-  transition:transform .16s cubic-bezier(.2,.7,.3,1), box-shadow .16s, background .2s;
-}
-.btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 var(--burgundy-dark), var(--shadow-lg)}
-.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--burgundy-dark)}
-.btn.ghost{background:transparent;color:var(--burgundy);box-shadow:inset 0 0 0 2px var(--line)}
-.btn.ghost:hover{background:rgba(107,31,43,.06);box-shadow:inset 0 0 0 2px var(--burgundy)}
-.btn.big{font-size:20px;padding:20px 42px}
-.btn[disabled]{opacity:.4;pointer-events:none}
-
-.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--rose);font-weight:700}
-.card{background:#fff;border-radius:var(--r);box-shadow:var(--shadow-sm);border:1px solid var(--line)}
-
-/* ---------- boot ---------- */
-#boot{display:none;place-items:center;min-height:100vh;background:radial-gradient(120% 90% at 50% 0%, #7d2735 0%, var(--burgundy-dark) 62%, #2c0c12 100%);position:relative;overflow:hidden}
-#boot.on{display:grid}
-.coin{position:absolute;border-radius:50%;background:linear-gradient(150deg,#e8c877,#b8862f);opacity:.14;animation:drift linear infinite}
-@keyframes drift{from{transform:translateY(110vh) rotate(0)}to{transform:translateY(-20vh) rotate(540deg)}}
-.boot-inner{text-align:center;position:relative;z-index:2;padding:24px}
-.boot-inner h1{
-  font-family:var(--display);font-weight:800;color:var(--beige);
-  font-size:clamp(44px,9vw,116px);line-height:.92;letter-spacing:-.035em;
-}
-.boot-inner h1 span{display:inline-block;opacity:0;animation:pop .6s cubic-bezier(.2,.8,.3,1) forwards}
-.boot-tag{margin-top:22px;font-size:clamp(15px,2vw,21px);color:var(--rose);letter-spacing:.04em;opacity:0;animation:fadeIn .8s .9s forwards}
-.boot-tag b{color:var(--beige);font-weight:600}
-.boot-cta{margin-top:44px;opacity:0;animation:fadeUp .7s 1.35s forwards}
-.boot-cta .btn{background:var(--beige);color:var(--burgundy-dark);box-shadow:0 4px 0 var(--rose)}
-.boot-note{margin-top:20px;font-size:12px;color:rgba(244,235,221,.42);opacity:0;animation:fadeIn 1s 1.9s forwards}
-
-/* ---------- select ---------- */
-#select{padding:56px 0 90px;background:
-  radial-gradient(70% 50% at 12% 0%, #fff 0%, transparent 60%),
-  var(--beige)}
-.sel-head{text-align:center;margin-bottom:46px}
-.sel-head h2{font-family:var(--display);font-weight:800;font-size:clamp(34px,6vw,66px);letter-spacing:-.03em;color:var(--burgundy-dark);margin-top:10px}
-.sel-head p{color:var(--rose);margin-top:12px;font-size:16px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:24px}
-
-.char{
-  position:relative;background:#fff;border-radius:26px;padding:26px 24px 24px;text-align:left;
-  border:1px solid var(--line);box-shadow:var(--shadow-sm);
-  transition:transform .3s cubic-bezier(.2,.8,.3,1), box-shadow .3s;
-  overflow:hidden;
-}
-.char::before{content:'';position:absolute;inset:0;background:radial-gradient(90% 60% at 50% -10%, rgba(166,106,106,.16), transparent 62%);opacity:0;transition:opacity .35s}
-.char:hover{transform:translateY(-10px);box-shadow:var(--shadow-lg)}
-.char:hover::before{opacity:1}
-.char:hover .av{transform:translateY(-6px) scale(1.05)}
-.char:hover .reveal{max-height:190px;opacity:1}
-.av{width:118px;height:118px;display:block;margin:0 auto 16px;transition:transform .4s cubic-bezier(.2,.8,.3,1);position:relative;z-index:1}
-.char h3{font-family:var(--display);font-weight:700;font-size:25px;letter-spacing:-.02em;color:var(--burgundy-dark);position:relative;z-index:1}
-.char .role{font-size:13.5px;color:var(--rose);margin-top:3px;position:relative;z-index:1}
-.char .desc{font-size:14px;line-height:1.55;margin-top:12px;color:#5c4148;position:relative;z-index:1}
-.reveal{max-height:0;opacity:0;overflow:hidden;transition:max-height .42s cubic-bezier(.2,.8,.3,1), opacity .3s;position:relative;z-index:1}
-.stat-rows{margin-top:16px;padding-top:14px;border-top:1px dashed var(--line)}
-.srow{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;color:#6b4c53}
-.srow b{font-family:var(--mono);font-weight:700;color:var(--burgundy-dark)}
-.diff{position:absolute;top:18px;right:18px;display:flex;gap:3px;z-index:2}
-.diff i{width:7px;height:16px;border-radius:3px;background:var(--line)}
-.diff i.f{background:var(--burgundy)}
-.diff-label{position:absolute;top:20px;left:18px;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--rose);z-index:2}
-
-/* ---------- profile ---------- */
-#profile{min-height:100vh;background:var(--burgundy-dark);color:var(--beige);display:none}
-#profile.on{display:grid;place-items:center;padding:60px 24px}
-.prof{max-width:940px;display:grid;grid-template-columns:300px 1fr;gap:52px;align-items:center}
-.prof-av{width:280px;height:280px;filter:drop-shadow(0 24px 44px rgba(0,0,0,.42))}
-.prof h2{font-family:var(--display);font-weight:800;font-size:clamp(38px,6vw,62px);letter-spacing:-.03em;line-height:1}
-.prof .sub{color:var(--rose);margin:10px 0 22px;font-size:17px}
-.prof .story{font-size:16.5px;line-height:1.72;color:rgba(244,235,221,.84);max-width:56ch}
-.prof .chal{margin-top:22px;padding:16px 20px;border-left:3px solid var(--rose);background:rgba(244,235,221,.06);border-radius:0 12px 12px 0;font-size:14.5px}
-.prof-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:26px}
-.pstat{background:rgba(244,235,221,.07);border-radius:14px;padding:14px}
-.pstat span{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--rose);text-transform:uppercase}
-.pstat b{display:block;font-family:var(--mono);font-size:19px;margin-top:6px}
-.prof-actions{margin-top:34px;display:flex;gap:14px;flex-wrap:wrap}
-#profile .btn{background:var(--beige);color:var(--burgundy-dark);box-shadow:0 4px 0 var(--rose)}
-#profile .btn.ghost{background:transparent;color:var(--beige);box-shadow:inset 0 0 0 2px rgba(244,235,221,.28)}
-
-/* ---------- goal ---------- */
-#goal{min-height:100vh;display:none;place-items:center;background:var(--beige);padding:60px 24px}
-#goal.on{display:grid}
-.goalbox{max-width:660px;width:100%;text-align:center}
-.goalbox h2{font-family:var(--display);font-weight:800;font-size:clamp(32px,5vw,52px);letter-spacing:-.03em;color:var(--burgundy-dark);margin:12px 0 10px}
-.goalbox p{color:var(--rose);margin-bottom:30px}
-.chips{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-bottom:26px}
-.chip{background:#fff;border:1px solid var(--line);border-radius:100px;padding:10px 18px;font-size:13.5px;transition:.2s;color:#6b4c53}
-.chip:hover{border-color:var(--burgundy);color:var(--burgundy);transform:translateY(-2px)}
-.chip.sel{background:var(--burgundy);color:#fff;border-color:var(--burgundy)}
-.goal-form{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
-input[type=text],input[type=number]{
-  font-family:var(--body);font-size:15px;padding:15px 20px;border-radius:14px;
-  border:1px solid var(--line);background:#fff;color:var(--ink);min-width:200px;
-}
-input[type=number]{font-family:var(--mono);min-width:150px}
-.goal-list{margin:20px auto 30px;max-width:460px;display:grid;gap:9px}
-.goal-item{display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:14px;padding:13px 18px;font-size:14px;box-shadow:var(--shadow-sm);animation:pop .35s both}
-.goal-item b{font-family:var(--mono)}
-.goal-item button{color:var(--rose);font-size:19px;line-height:1}
-
-/* ---------- dashboard ---------- */
-#dash{display:none;background:var(--beige)}
-#dash.on{display:block}
-.hud{
-  position:sticky;top:0;z-index:40;background:rgba(251,247,240,.9);backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--line);
-}
-.hud-in{max-width:1280px;margin:0 auto;padding:12px 32px;display:flex;align-items:center;gap:22px}
-.hud-brand{font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:-.01em;color:var(--burgundy);white-space:nowrap}
-.hud-chapter{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;color:var(--rose);text-transform:uppercase;padding-left:22px;border-left:1px solid var(--line);white-space:nowrap}
-.hud-chapter b{display:block;font-family:var(--display);font-size:14px;letter-spacing:0;color:var(--burgundy-dark);text-transform:none;margin-top:2px}
-.nav{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap}
-.nav button{font-size:13.5px;padding:9px 15px;border-radius:100px;color:#7a5a61;transition:.2s;font-weight:500}
-.nav button:hover{background:rgba(107,31,43,.07);color:var(--burgundy)}
-.nav button.on{background:var(--burgundy);color:#fff}
-
-.mrail{max-width:1280px;margin:0 auto;padding:0 32px}
-.months{display:flex;gap:5px;padding:11px 0}
-.mdot{flex:1;height:5px;border-radius:4px;background:rgba(107,31,43,.13);transition:.4s}
-.mdot.done{background:var(--rose)}
-.mdot.now{background:var(--burgundy);box-shadow:0 0 0 3px rgba(107,31,43,.16)}
-
-.board{display:grid;grid-template-columns:290px 1fr;gap:26px;padding:22px 0 120px}
-.side{position:sticky;top:112px;align-self:start;display:grid;gap:16px}
-.charcard{background:linear-gradient(168deg,#7c2735,var(--burgundy-dark));border-radius:24px;padding:24px;color:var(--beige);text-align:center;box-shadow:var(--shadow-md);position:relative;overflow:hidden}
-.charcard::after{content:'';position:absolute;inset:auto -30% -55% -30%;height:150px;background:radial-gradient(closest-side,rgba(244,235,221,.16),transparent)}
-.charcard .av{width:132px;height:132px;margin-bottom:8px}
-.charcard h3{font-family:var(--display);font-weight:700;font-size:21px;position:relative}
-.charcard .mood{font-size:12px;color:var(--rose);margin-top:3px;position:relative;min-height:17px}
-.nw{margin-top:16px;padding-top:16px;border-top:1px solid rgba(244,235,221,.16);position:relative}
-.nw span{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--rose)}
-.nw b{display:block;font-family:var(--mono);font-size:31px;font-weight:700;margin-top:4px;letter-spacing:-.02em}
-
-.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.tile{background:#fff;border-radius:18px;padding:17px 18px;border:1px solid var(--line);box-shadow:var(--shadow-sm);transition:transform .25s}
-.tile:hover{transform:translateY(-3px)}
-.tile span{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;color:var(--rose);text-transform:uppercase}
-.tile b{display:block;font-family:var(--mono);font-size:25px;font-weight:700;margin-top:7px;letter-spacing:-.02em;color:var(--burgundy-dark)}
-.tile.hero{grid-column:span 2;background:linear-gradient(150deg,#fff,#fdf6ec)}
-.tile.hero b{font-size:36px}
-.tile small{display:block;font-size:11.5px;color:var(--rose);margin-top:4px}
-
-.panel{background:#fff;border-radius:22px;padding:26px;border:1px solid var(--line);box-shadow:var(--shadow-sm);margin-top:18px}
-.panel h4{font-family:var(--display);font-weight:700;font-size:17px;color:var(--burgundy-dark);margin-bottom:4px}
-.panel .hint{font-size:13px;color:var(--rose);margin-bottom:18px}
-
-.dims{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.dim{}
-.dim .top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
-.dim .top b{font-family:var(--display);font-size:13px;letter-spacing:.03em;text-transform:uppercase;color:var(--burgundy-dark)}
-.dim .top i{font-family:var(--mono);font-size:12px;font-style:normal;color:var(--rose)}
-.bar{height:8px;border-radius:6px;background:rgba(107,31,43,.1);overflow:hidden}
-.bar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--rose),var(--burgundy));transition:width .9s cubic-bezier(.2,.8,.3,1)}
-.dim p{font-size:11.5px;color:#8a6b71;margin-top:6px;line-height:1.45}
-
-.alloc{display:grid;gap:16px}
-.slot{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
-.slot .lab{font-size:14px;font-weight:600;color:var(--burgundy-dark)}
-.slot .lab em{display:block;font-style:normal;font-size:11.5px;color:var(--rose);font-weight:400;margin-top:2px}
-.slot .amt{font-family:var(--mono);font-size:17px;font-weight:700;color:var(--burgundy);min-width:82px;text-align:right}
-input[type=range]{grid-column:1/-1;-webkit-appearance:none;appearance:none;height:8px;border-radius:6px;background:rgba(107,31,43,.12);width:100%}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--burgundy);border:4px solid #fff;box-shadow:var(--shadow-sm);cursor:grab}
-input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--burgundy);border:4px solid #fff;cursor:grab}
-.pool{display:flex;justify-content:space-between;align-items:center;background:var(--beige);border-radius:14px;padding:13px 18px;margin-bottom:18px;font-size:13.5px}
-.pool b{font-family:var(--mono);font-size:20px;color:var(--burgundy)}
-
-.gl{display:grid;gap:14px}
-.gcard{background:var(--beige-light);border-radius:16px;padding:16px 18px;border:1px solid var(--line)}
-.gcard .gt{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
-.gcard .gt b{font-family:var(--display);font-size:14px;text-transform:uppercase;letter-spacing:.04em;color:var(--burgundy-dark)}
-.gcard .gt i{font-family:var(--mono);font-size:13px;font-style:normal;color:var(--burgundy)}
-.gcard.done{background:linear-gradient(120deg,#f2e9d8,#fff);border-color:var(--gold)}
-.gcard.done .gt b::after{content:' ✓';color:var(--gain)}
-
-.footbar{
-  position:fixed;left:0;right:0;bottom:0;z-index:45;
-  background:rgba(251,247,240,.94);backdrop-filter:blur(14px);border-top:1px solid var(--line);
-}
-.footbar-in{max-width:1280px;margin:0 auto;padding:14px 32px;display:flex;align-items:center;gap:20px}
-.footbar .fl{font-size:13px;color:var(--rose)}
-.footbar .fl b{display:block;font-family:var(--display);font-size:16px;color:var(--burgundy-dark)}
-.footbar .btn{margin-left:auto}
-
-/* invest */
-.alloc-viz{display:flex;height:14px;border-radius:8px;overflow:hidden;margin:14px 0 20px;background:rgba(107,31,43,.08)}
-.alloc-viz i{transition:width .6s cubic-bezier(.2,.8,.3,1)}
-.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:#6b4c53;margin-bottom:20px}
-.legend span{display:flex;align-items:center;gap:6px}
-.legend em{width:10px;height:10px;border-radius:3px;font-style:normal}
-.spark{width:100%;height:120px;display:block}
-.disc{font-size:11.5px;color:#8a6b71;line-height:1.55;background:var(--beige);border-radius:12px;padding:13px 16px;margin-top:18px}
-
-/* skills */
-.skills{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.skill{background:var(--beige-light);border-radius:18px;padding:18px;border:1px solid var(--line)}
-.skill h5{font-family:var(--display);font-size:14px;text-transform:uppercase;letter-spacing:.05em;color:var(--burgundy-dark)}
-.skill .lv{font-family:var(--mono);font-size:11.5px;color:var(--rose);margin:5px 0 11px}
-.pips{display:flex;gap:5px;margin-bottom:9px}
-.pips i{flex:1;height:6px;border-radius:4px;background:rgba(107,31,43,.12);transition:.5s}
-.pips i.on{background:var(--burgundy)}
-.skill p{font-size:11.5px;color:#8a6b71;line-height:1.45}
-
-/* timeline */
-.tl{position:relative;padding-left:30px}
-.tl::before{content:'';position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--line)}
-.tev{position:relative;padding:0 0 22px}
-.tev::before{content:'';position:absolute;left:-26px;top:5px;width:11px;height:11px;border-radius:50%;background:var(--rose);border:2.5px solid var(--beige-light)}
-.tev.big::before{background:var(--burgundy);transform:scale(1.25)}
-.tev.win::before{background:var(--gold)}
-.tev .m{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--rose);text-transform:uppercase}
-.tev .t{font-size:14.5px;font-weight:600;color:var(--burgundy-dark);margin-top:2px}
-.tev .d{font-size:12.5px;color:#8a6b71;margin-top:2px}
-.tev .v{font-family:var(--mono);font-size:12.5px;margin-top:3px}
-.up{color:var(--gain)} .dn{color:var(--loss)}
-
-/* achievements */
-.ach{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.trophy{background:var(--beige-light);border-radius:16px;padding:16px;border:1px solid var(--line);opacity:.4;transition:.4s}
-.trophy.on{opacity:1;background:linear-gradient(140deg,#fff,#f7eeda);border-color:var(--gold);box-shadow:var(--shadow-sm)}
-.trophy b{display:block;font-family:var(--display);font-size:13.5px;color:var(--burgundy-dark);margin-top:7px}
-.trophy p{font-size:11.5px;color:#8a6b71;margin-top:3px}
-
-/* ---------- event overlay ---------- */
-#scene{position:fixed;inset:0;z-index:100;display:none;background:var(--burgundy-dark);overflow-y:auto}
-#scene.on{display:block;animation:sceneIn .55s cubic-bezier(.2,.8,.3,1) both}
-@keyframes sceneIn{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:none}}
-.scene-art{position:relative;height:44vh;min-height:280px;overflow:hidden}
-.scene-art svg{position:absolute;inset:0;width:100%;height:100%}
-.scene-art .actor{position:absolute;left:50%;bottom:6%;transform:translateX(-50%);width:min(210px,34vw);animation:enter .8s .2s cubic-bezier(.2,.8,.3,1) both;filter:drop-shadow(0 20px 34px rgba(0,0,0,.45))}
-@keyframes enter{from{opacity:0;transform:translate(-50%,26px)}to{opacity:1;transform:translate(-50%,0)}}
-.scene-body{max-width:880px;margin:0 auto;padding:34px 28px 70px;text-align:center;color:var(--beige)}
-.scene-body .eyebrow{color:var(--rose)}
-.scene-body h2{font-family:var(--display);font-weight:800;font-size:clamp(30px,5.2vw,54px);letter-spacing:-.03em;margin:10px 0 12px;line-height:1.02}
-.scene-body .lead{font-size:17px;color:rgba(244,235,221,.8);max-width:56ch;margin:0 auto;line-height:1.65}
-.cost{display:inline-block;font-family:var(--mono);font-weight:700;font-size:30px;margin:22px 0 6px;padding:12px 28px;border-radius:100px;background:rgba(244,235,221,.1);border:1px solid rgba(244,235,221,.2)}
-.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:30px;text-align:left}
-.choice{
-  background:rgba(244,235,221,.07);border:1px solid rgba(244,235,221,.16);border-radius:20px;padding:22px;
-  transition:transform .25s cubic-bezier(.2,.8,.3,1),background .25s,border-color .25s;color:var(--beige);
-}
-.choice:hover:not([disabled]){transform:translateY(-6px);background:rgba(244,235,221,.14);border-color:var(--rose)}
-.choice[disabled]{opacity:.32;cursor:not-allowed}
-.choice b{display:block;font-family:var(--display);font-size:17px;letter-spacing:.01em;margin-bottom:10px}
-.choice .now{font-size:12.5px;color:var(--rose);font-family:var(--mono)}
-.choice .later{font-size:12.5px;color:rgba(244,235,221,.62);margin-top:7px;line-height:1.5}
-.why{max-width:640px;margin:0 auto;text-align:left;background:rgba(244,235,221,.08);border-left:3px solid var(--rose);border-radius:0 16px 16px 0;padding:22px 26px;animation:fadeUp .5s both}
-.why .eyebrow{display:block;margin-bottom:8px}
-.why p{font-size:15px;line-height:1.65;color:rgba(244,235,221,.88)}
-.scene-cta{margin-top:28px}
-#scene .btn{background:var(--beige);color:var(--burgundy-dark);box-shadow:0 4px 0 var(--rose)}
-
-/* toast */
-#toasts{position:fixed;right:24px;bottom:96px;z-index:120;display:grid;gap:10px;justify-items:end}
-.toast{
-  background:var(--burgundy-dark);color:var(--beige);border-radius:16px;padding:14px 20px;
-  box-shadow:var(--shadow-lg);display:flex;gap:12px;align-items:center;max-width:330px;
-  animation:toastIn .5s cubic-bezier(.2,.8,.3,1) both;border:1px solid rgba(244,235,221,.14);
-}
-@keyframes toastIn{from{opacity:0;transform:translateX(40px) scale(.94)}to{opacity:1;transform:none}}
-.toast.out{animation:toastOut .4s forwards}
-@keyframes toastOut{to{opacity:0;transform:translateX(40px)}}
-.toast .ic{font-size:22px}
-.toast b{display:block;font-family:var(--display);font-size:14px}
-.toast span{font-size:12px;color:var(--rose)}
-
-/* counter ticks */
-.tick-up{animation:tickUp .7s ease-out}
-.tick-dn{animation:tickDn .7s ease-out}
-@keyframes tickUp{0%{color:var(--gain);transform:translateY(3px)}100%{transform:none}}
-@keyframes tickDn{0%{color:var(--loss);transform:translateY(-3px)}100%{transform:none}}
-
-/* dynamic emphasis band (§6) */
-.band{
-  border-radius:20px;padding:20px 24px;margin-bottom:18px;display:flex;gap:18px;align-items:center;
-  animation:pop .45s both;box-shadow:var(--shadow-md);
-}
-.band .bic{font-size:30px;flex-shrink:0}
-.band b{display:block;font-family:var(--display);font-size:17px;letter-spacing:-.01em}
-.band p{font-size:13.5px;margin-top:3px;opacity:.82;line-height:1.5}
-.band .btn{margin-left:auto;flex-shrink:0;padding:12px 22px;font-size:14px}
-.band.alert{background:linear-gradient(150deg,#8d3444,var(--burgundy-dark));color:var(--beige)}
-.band.alert .btn{background:var(--beige);color:var(--burgundy-dark);box-shadow:0 3px 0 var(--rose)}
-.band.win{background:linear-gradient(150deg,#fff,#f5e9d2);color:var(--burgundy-dark);border:1px solid var(--gold)}
-.band.win .btn{background:var(--burgundy);color:#fff}
-.band.market{background:linear-gradient(150deg,#3c5a6b,#171f28);color:var(--beige)}
-.band.shop{background:linear-gradient(150deg,#7a5a2a,#2a1c10);color:var(--beige)}
-.band.shop .btn{background:var(--beige);color:#2a1c10;box-shadow:0 3px 0 rgba(0,0,0,.3)}
-@media (max-width:640px){.band{flex-wrap:wrap}.band .btn{margin-left:0;width:100%;justify-content:center}}
-
-/* shopping scene (§13) */
-.shelf{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:28px;text-align:left}
-.item{
-  background:rgba(244,235,221,.07);border:1px solid rgba(244,235,221,.16);border-radius:20px;padding:22px;
-  color:var(--beige);transition:transform .25s cubic-bezier(.2,.8,.3,1),background .25s,border-color .25s;
-  display:flex;flex-direction:column;
-}
-.item:hover:not([disabled]){transform:translateY(-7px);background:rgba(244,235,221,.14);border-color:var(--gold)}
-.item[disabled]{opacity:.3;cursor:not-allowed}
-.item .pic{height:78px;margin-bottom:14px}
-.item .pic svg{height:100%;width:auto;display:block;margin:0 auto}
-.item b{font-family:var(--display);font-size:16.5px;display:block}
-.item .price{font-family:var(--mono);font-weight:700;font-size:25px;margin:8px 0 12px;color:var(--gold)}
-.item .qual{display:flex;gap:3px;margin-bottom:12px}
-.item .qual i{flex:1;height:5px;border-radius:3px;background:rgba(244,235,221,.18)}
-.item .qual i.on{background:var(--gold)}
-.item .meta{font-size:12px;font-family:var(--mono);color:rgba(244,235,221,.62);line-height:1.7;margin-top:auto}
-.item .meta em{font-style:normal;color:var(--rose)}
-.opp{font-size:12px;color:var(--rose);margin-top:12px;padding-top:11px;border-top:1px dashed rgba(244,235,221,.18);line-height:1.5}
-
-/* floaters */
-.floater{position:fixed;z-index:130;font-family:var(--mono);font-weight:700;font-size:22px;pointer-events:none;animation:float 1.5s cubic-bezier(.2,.8,.3,1) forwards}
-@keyframes float{0%{opacity:0;transform:translateY(8px) scale(.8)}18%{opacity:1;transform:translateY(-4px) scale(1.06)}100%{opacity:0;transform:translateY(-58px) scale(1)}}
-
-/* ---------- ending ---------- */
-#end{display:none;background:var(--burgundy-dark);color:var(--beige);min-height:100vh}
-#end.on{display:block}
-.end-art{height:40vh;min-height:250px;position:relative;overflow:hidden}
-.end-art svg{position:absolute;inset:0;width:100%;height:100%}
-.end-art .actor{position:absolute;left:50%;bottom:5%;transform:translateX(-50%);width:min(220px,36vw);filter:drop-shadow(0 22px 40px rgba(0,0,0,.5));animation:enter 1s .3s both}
-.end-wrap{max-width:1040px;margin:0 auto;padding:44px 28px 90px}
-.end-wrap h2{font-family:var(--display);font-weight:800;font-size:clamp(32px,5.4vw,58px);letter-spacing:-.03em;text-align:center;line-height:1.02}
-.end-sec{margin-top:56px}
-.end-sec > .eyebrow{display:block;text-align:center;margin-bottom:10px}
-.ledger{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:26px}
-.led{background:rgba(244,235,221,.07);border-radius:18px;padding:20px;border:1px solid rgba(244,235,221,.12)}
-.led span{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;color:var(--rose);text-transform:uppercase}
-.led .from{font-family:var(--mono);font-size:13px;color:rgba(244,235,221,.5);margin-top:8px}
-.led b{display:block;font-family:var(--mono);font-size:27px;margin-top:3px;letter-spacing:-.02em}
-.learn{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:26px}
-.lcard{background:rgba(244,235,221,.07);border-radius:20px;padding:24px;border:1px solid rgba(244,235,221,.12)}
-.lcard .eyebrow{display:block;margin-bottom:9px}
-.lcard b{font-family:var(--display);font-size:23px;display:block;letter-spacing:-.01em}
-.lcard p{font-size:13.5px;color:rgba(244,235,221,.68);margin-top:9px;line-height:1.6}
-.fork{display:grid;grid-template-columns:1fr auto 1fr;gap:22px;align-items:center;margin-top:28px}
-.path{border-radius:22px;padding:28px;border:1px solid rgba(244,235,221,.14);background:rgba(244,235,221,.06)}
-.path.real{background:linear-gradient(150deg,rgba(244,235,221,.16),rgba(244,235,221,.05));border-color:var(--rose)}
-.path .eyebrow{display:block;margin-bottom:12px}
-.path b{font-family:var(--mono);font-size:37px;font-weight:700;display:block;letter-spacing:-.02em}
-.path .cap{font-size:12.5px;color:rgba(244,235,221,.6);margin-top:5px}
-.path ul{margin-top:16px;padding-left:16px}
-.path li{font-size:13px;color:rgba(244,235,221,.72);line-height:1.6;margin-bottom:6px}
-.vs{font-family:var(--display);font-weight:800;font-size:15px;color:var(--rose);letter-spacing:.14em}
-.end-cta{text-align:center;margin-top:60px}
-#end .btn{background:var(--beige);color:var(--burgundy-dark);box-shadow:0 4px 0 var(--rose)}
-
-@media (max-width:1080px){
-  .board{grid-template-columns:1fr}
-  .side{position:static}
-  .charcard{display:grid;grid-template-columns:auto 1fr;gap:20px;text-align:left;align-items:center}
-  .charcard .av{width:96px;height:96px;margin:0}
-  .nw{border-top:none;padding-top:0;margin-top:8px}
-}
-@media (max-width:820px){
-  .wrap,.hud-in,.mrail,.footbar-in{padding-left:18px;padding-right:18px}
-  .prof{grid-template-columns:1fr;gap:28px;text-align:center}
-  .prof-av{margin:0 auto;width:200px;height:200px}
-  .prof .story{margin:0 auto}
-  .prof .chal{text-align:left}
-  .prof-actions{justify-content:center}
-  .tiles{grid-template-columns:repeat(2,1fr)}
-  .tile.hero{grid-column:span 2}
-  .dims,.skills,.ach{grid-template-columns:1fr 1fr}
-  .fork{grid-template-columns:1fr}
-  .vs{text-align:center}
-  .hud-chapter{display:none}
-  .nav{margin-left:0;width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}
-  .footbar .fl b{font-size:14px}
-}
-@media (max-width:520px){
-  .dims,.skills,.ach,.prof-stats{grid-template-columns:1fr}
-  .tiles{grid-template-columns:1fr}
-  .tile.hero{grid-column:span 1}
-}
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
-}
-</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finance Forward Network | Financial Literacy and Cybersecurity for Students</title>
+<meta name="description" content="Finance Forward Network is a student led organization building financial literacy and cybersecurity education through research, workshops, and simulations.">
+<link rel="icon" href="assets/brand/logo.jpg">
+<link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-<!-- ============ BOOT ============ -->
-<section id="boot" class="screen on">
-  <div class="boot-inner">
-    <h1 id="bootTitle"></h1>
-    <p class="boot-tag">Your money. <b>Your choices.</b> Your future.</p>
-    <div class="boot-cta"><button class="btn big" onclick="go('select')">Choose your life →</button></div>
-    <p class="boot-note">A simulation for Finance Forward · 12 months · no real money involved</p>
-  </div>
-</section>
+<div class="bg-field" aria-hidden="true">
+  <div class="grid-pattern"></div>
+  <div class="glow-a"></div>
+  <div class="glow-b"></div>
+</div>
 
-<!-- ============ SELECT ============ -->
-<section id="select" class="screen">
-  <div class="wrap">
-    <div class="sel-head">
-      <p class="eyebrow">Step one</p>
-      <h2>Choose your life</h2>
-      <p>Five people. Five very different starting points. Hover to see the numbers.</p>
+<div class="scroll-progress" aria-hidden="true"><div class="scroll-progress-fill" id="scroll-progress-fill"></div></div>
+
+<header class="site-header">
+  <nav class="nav container">
+    <a href="#home" class="brand">
+      <img src="assets/brand/logo.jpg" alt="Finance Forward Network logo" class="brand-logo">
+      <span class="brand-word">Finance Forward Network<span>Est. 2025</span></span>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="#home" aria-current="page">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#research">Research</a></li>
+      <li><a href="#education">Education</a></li>
+      <li><a href="#simulations">Simulations</a></li>
+      <li class="nav-item-more" id="more-item">
+        <button class="more-toggle" id="more-toggle" aria-expanded="false" aria-haspopup="true">
+          More
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <ul class="more-menu" id="more-menu">
+          <li><a href="#insights">Insights</a></li>
+          <li><a href="#collaborations">Collaborations</a></li>
+        </ul>
+      </li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+
+    <div class="nav-right">
+      <a class="icon-link" data-instagram-link href="https://www.instagram.com/financeforwardnetwork/" target="_blank" rel="noopener" aria-label="Finance Forward Network on Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+      </a>
+      <a class="btn btn-primary btn-sm" href="https://docs.google.com/forms/d/e/1FAIpQLSdA3MazrX15SwbarwIDXdaefuyKzOkFEkI0WYdf3I9Tg4y8VA/viewform" target="_blank" rel="noopener">Join FFN →</a>
     </div>
-    <div class="grid" id="charGrid"></div>
+
+    <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false"><span></span></button>
+  </nav>
+</header>
+
+<div class="nav-scrim" id="nav-scrim"></div>
+<div class="mobile-panel" id="mobile-panel">
+  <div class="mobile-panel-head">
+    <a href="#home" class="brand">
+      <img src="assets/brand/logo.jpg" alt="Finance Forward Network logo" class="brand-logo">
+      <span class="brand-word">Finance Forward Network<span>Est. 2025</span></span>
+    </a>
+    <button class="mobile-close" id="mobile-close" aria-label="Close menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
   </div>
-</section>
+  <ul>
+    <li><a href="#home">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#simulations">Simulations</a></li>
+    <li><a href="#insights">Insights</a></li>
+    <li><a href="#collaborations">Collaborations</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a class="btn btn-primary btn-block" href="https://docs.google.com/forms/d/e/1FAIpQLSdA3MazrX15SwbarwIDXdaefuyKzOkFEkI0WYdf3I9Tg4y8VA/viewform" target="_blank" rel="noopener">Join FFN →</a>
+  <div class="mobile-panel-social">
+    <a class="icon-link" data-instagram-link href="https://www.instagram.com/financeforwardnetwork/" target="_blank" rel="noopener" aria-label="Instagram">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+    </a>
+    <a class="icon-link" data-linktree-link href="https://linktr.ee/finance.forward99" target="_blank" rel="noopener" aria-label="Linktree">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M5 9l7-7 7 7M5 15l7 7 7-7"/></svg>
+    </a>
+  </div>
+</div>
 
-<!-- ============ PROFILE ============ -->
-<section id="profile" class="screen"><div class="prof" id="profBody"></div></section>
+<main>
 
-<!-- ============ GOALS ============ -->
-<section id="goal" class="screen">
-  <div class="goalbox">
-    <p class="eyebrow">Step two</p>
-    <h2>What are you working toward?</h2>
-    <p>Pick a starting point or write your own. You can chase up to three.</p>
-    <div class="chips" id="goalChips"></div>
-    <div class="goal-form">
-      <input type="text" id="gName" placeholder="Goal name" maxlength="26">
-      <input type="number" id="gAmt" placeholder="Amount ($)" min="100" step="50">
-      <button class="btn ghost" onclick="addGoal()">Add goal</button>
+  <!-- HOME / HERO -->
+  <section class="hero" id="home">
+    <div class="blob-layer" aria-hidden="true">
+      <div class="blob blob-hero-1 blob-bg" data-speed="0.10"><div class="blob-inner blob-drift-a"><svg viewBox="0 0 600 600"><path fill="currentColor" d="M300,60 C420,60 540,150 560,280 C580,410 480,540 340,560 C200,580 80,480 60,340 C40,200 140,80 280,60 C286,59 294,60 300,60 Z"><animate attributeName="d" dur="13s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M300,60 C420,60 540,150 560,280 C580,410 480,540 340,560 C200,580 80,480 60,340 C40,200 140,80 280,60 C286,59 294,60 300,60 Z;M330,90 C450,60 560,160 550,290 C540,420 430,530 300,530 C170,530 60,440 70,310 C80,180 200,90 300,70 C310,68 322,88 330,90 Z;M270,100 C400,60 540,130 560,260 C580,390 490,520 350,550 C210,580 70,510 60,380 C50,250 140,140 260,110 C264,109 266,101 270,100 Z;M300,60 C420,60 540,150 560,280 C580,410 480,540 340,560 C200,580 80,480 60,340 C40,200 140,80 280,60 C286,59 294,60 300,60 Z"/></path></svg></div></div>
+      <div class="blob blob-hero-2 blob-mid" data-speed="0.16"><div class="blob-inner blob-drift-b"><svg viewBox="0 0 600 600"><path fill="currentColor" d="M320,80 C440,100 520,200 520,320 C520,440 420,540 300,540 C180,540 70,450 70,320 C70,190 180,90 300,80 C306,79 314,79 320,80 Z"><animate attributeName="d" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M320,80 C440,100 520,200 520,320 C520,440 420,540 300,540 C180,540 70,450 70,320 C70,190 180,90 300,80 C306,79 314,79 320,80 Z;M290,60 C410,50 530,130 540,260 C550,390 460,510 330,530 C200,550 70,470 60,340 C50,210 150,90 270,70 C277,69 283,61 290,60 Z;M340,110 C450,140 500,240 480,350 C460,460 350,530 240,510 C130,490 50,390 70,280 C90,170 190,90 300,90 C313,90 327,106 340,110 Z;M320,80 C440,100 520,200 520,320 C520,440 420,540 300,540 C180,540 70,450 70,320 C70,190 180,90 300,80 C306,79 314,79 320,80 Z"/></path></svg></div></div>
+      <div class="blob blob-hero-3 blob-fg" data-speed="0.22"><div class="blob-inner blob-drift-e"><svg viewBox="0 0 400 400"><path fill="currentColor" d="M210,50 C300,60 360,140 350,220 C340,300 260,350 180,340 C100,330 40,260 50,180 C60,100 130,44 210,50 Z"><animate attributeName="d" dur="8s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M210,50 C300,60 360,140 350,220 C340,300 260,350 180,340 C100,330 40,260 50,180 C60,100 130,44 210,50 Z;M190,70 C270,50 340,120 340,200 C340,280 270,340 190,330 C110,320 50,250 60,170 C70,100 120,86 190,70 Z;M220,90 C290,110 320,190 300,260 C280,330 200,360 140,330 C80,300 50,220 80,150 C110,80 160,72 220,90 Z;M210,50 C300,60 360,140 350,220 C340,300 260,350 180,340 C100,330 40,260 50,180 C60,100 130,44 210,50 Z"/></path></svg></div></div>
     </div>
-    <div class="goal-list" id="goalList"></div>
-    <button class="btn big" id="startBtn" onclick="startLife()">Start my life →</button>
-  </div>
-</section>
-
-<!-- ============ DASHBOARD ============ -->
-<section id="dash" class="screen">
-  <div class="hud">
-    <div class="hud-in">
-      <div class="hud-brand">FINANCE FORWARD</div>
-      <div class="hud-chapter"><span id="chNum">Chapter 01</span><b id="chName">Getting Started</b></div>
-      <nav class="nav" id="nav"></nav>
-    </div>
-    <div class="mrail"><div class="months" id="months"></div></div>
-  </div>
-  <div class="wrap">
-    <div class="board">
-      <aside class="side">
-        <div class="charcard">
-          <div id="dashAv"></div>
-          <div>
-            <h3 id="dashName"></h3>
-            <p class="mood" id="dashMood"></p>
-            <div class="nw"><span>NET WORTH</span><b class="mono" id="nwVal">$0</b></div>
+    <div class="hero-scroll-glow" aria-hidden="true"></div>
+    <div class="container hero-inner">
+      <div class="reveal is-visible">
+        <span class="eyebrow">Student led, since 2025</span>
+        <h1>Financial confidence and cyber awareness, built for students.</h1>
+        <p class="hero-lede">Finance Forward Network is a student run organization teaching teens how to budget, save, and stay safe online through hands on simulations, workshops, and original research.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="https://financeforwardsim.netlify.app/" target="_blank" rel="noopener">
+            Launch the Simulation
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 17L17 7M17 7H8M17 7V16"/></svg>
+          </a>
+          <a class="btn btn-ghost" href="#join">Join Our Leadership Team</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18"/></svg></div>
+            <div><div class="num" data-count-to="2025">2025</div><div class="label">Founded</div></div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V10M12 19V4M20 19v-7"/></svg></div>
+            <div><div class="num" data-count-to="3">3</div><div class="label">Active programs</div></div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/></svg></div>
+            <div><div class="num">Free</div><div class="label">To every student</div></div>
           </div>
         </div>
-        <div class="panel" style="margin:0;padding:20px">
-          <h4>This month</h4>
-          <p class="hint" id="monthHint" style="margin-bottom:12px"></p>
-          <div class="srow" style="font-size:13px"><span>Income</span><b class="mono up" id="mIncome"></b></div>
-          <div class="srow" style="font-size:13px"><span>Fixed expenses</span><b class="mono dn" id="mExp"></b></div>
-          <div class="srow" style="font-size:13px;border-top:1px dashed var(--line);padding-top:8px;margin-top:4px"><span>Left over</span><b class="mono" id="mLeft"></b></div>
+      </div>
+
+      <div class="hero-visual reveal is-visible reveal-delay-2" aria-hidden="true">
+        <div class="hv-backdrop"></div>
+        <div class="hv-pill">Finance + Cybersecurity</div>
+        <div class="hv-card hv-budget" data-hv-card="budget"><div class="hv-tilt">
+          <span class="hv-label">Budget Overview</span>
+          <div class="hv-row"><span>Saved this month</span><span>$640</span></div>
+          <div class="hv-bar-track"><div class="hv-bar-fill" style="width:64%;"></div></div>
+        </div></div>
+        <div class="hv-card hv-shield" data-hv-card="shield"><div class="hv-tilt">
+          <div class="hv-shield-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <div class="hv-title">Scam flagged</div>
+          <div class="hv-sub">Suspicious link blocked</div>
+        </div></div>
+        <div class="hv-card hv-chart" data-hv-card="chart"><div class="hv-tilt">
+          <span class="hv-label">Spending</span>
+          <div class="hv-chart-bars">
+            <span style="height:40%;"></span><span style="height:70%;"></span><span style="height:52%;"></span>
+            <span style="height:85%;"></span><span style="height:60%;"></span>
+          </div>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="section" id="about">
+    <div class="blob-layer" aria-hidden="true">
+      <div class="blob blob-about-1 blob-bg" data-speed="0.07"><div class="blob-inner blob-drift-b"><svg viewBox="0 0 600 600"><path fill="currentColor" d="M280,90 C400,70 520,140 550,260 C580,380 500,500 370,540 C240,580 100,520 70,400 C40,280 120,150 240,100 C253,95 267,92 280,90 Z"><animate attributeName="d" dur="14s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M280,90 C400,70 520,140 550,260 C580,380 500,500 370,540 C240,580 100,520 70,400 C40,280 120,150 240,100 C253,95 267,92 280,90 Z;M240,110 C360,80 480,150 520,270 C560,390 470,500 340,540 C210,580 80,510 60,390 C40,270 120,140 240,110 Z;M310,70 C420,90 500,180 500,290 C500,400 420,500 310,510 C200,520 80,440 70,320 C60,200 150,60 260,60 C277,60 293,66 310,70 Z;M280,90 C400,70 520,140 550,260 C580,380 500,500 370,540 C240,580 100,520 70,400 C40,280 120,150 240,100 C253,95 267,92 280,90 Z"/></path></svg></div></div>
+      <div class="blob blob-about-2 blob-mid" data-speed="0.13" data-flow-into="research"><div class="blob-inner blob-drift-c"><svg viewBox="0 0 600 600"><path fill="currentColor" d="M300,50 C440,40 560,140 570,280 C580,420 470,540 320,560 C170,580 40,470 40,320 C40,180 160,60 300,50 Z"><animate attributeName="d" dur="12s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M300,50 C440,40 560,140 570,280 C580,420 470,540 320,560 C170,580 40,470 40,320 C40,180 160,60 300,50 Z;M330,80 C460,90 550,190 540,320 C530,450 410,540 280,530 C150,520 40,410 50,280 C60,150 200,70 330,80 Z;M270,70 C400,50 520,130 540,260 C560,390 470,510 340,530 C210,550 70,470 60,340 C50,210 140,90 270,70 Z;M300,50 C440,40 560,140 570,280 C580,420 470,540 320,560 C170,580 40,470 40,320 C40,180 160,60 300,50 Z"/></path></svg></div></div>
+      <div class="blob blob-about-3 blob-fg" data-speed="0.19"><div class="blob-inner blob-drift-d"><svg viewBox="0 0 300 300"><path fill="currentColor" d="M40,150 C40,80 100,30 170,40 C240,50 270,120 250,180 C230,240 150,270 100,240 C50,210 40,220 40,150 Z"><animate attributeName="d" dur="9s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M40,150 C40,80 100,30 170,40 C240,50 270,120 250,180 C230,240 150,270 100,240 C50,210 40,220 40,150 Z;M60,130 C70,60 150,30 210,60 C270,90 280,160 250,210 C220,260 130,270 90,230 C50,190 50,200 60,130 Z;M40,150 C40,80 100,30 170,40 C240,50 270,120 250,180 C230,240 150,270 100,240 C50,210 40,220 40,150 Z"/></path></svg></div></div>
+    </div>
+    <div class="container">
+      <div class="split">
+        <div class="reveal">
+          <span class="eyebrow">About Finance Forward Network</span>
+          <h2>Founded in 2025, built by students who saw the gap firsthand.</h2>
         </div>
-      </aside>
-      <main id="view"></main>
-    </div>
-  </div>
-  <div class="footbar"><div class="footbar-in">
-    <div class="fl"><span id="footNote">Decide where your money goes.</span><b id="footMonth">Month 1 of 12</b></div>
-    <button class="btn" id="nextBtn" onclick="nextMonth()">Next month →</button>
-  </div></div>
-</section>
-
-<!-- ============ SCENE OVERLAY ============ -->
-<section id="scene">
-  <div class="scene-art" id="sceneArt"></div>
-  <div class="scene-body" id="sceneBody"></div>
-</section>
-
-<!-- ============ END ============ -->
-<section id="end" class="screen"><div id="endBody"></div></section>
-
-<div id="toasts"></div>
-
-<script>
-/* ============================================================
-   FINANCE FORWARD — all state lives in memory. No backend.
-   ============================================================ */
-
-const $ = s => document.querySelector(s);
-const money = n => (n<0?'-':'') + '$' + Math.abs(Math.round(n)).toLocaleString();
-const clamp = (n,a,b) => Math.max(a,Math.min(b,n));
-
-/* ---------- animated money counters (§7) ---------- */
-const PREV = {};
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-function ctr(id, value, fmt){
-  const from = PREV[id]===undefined ? value : PREV[id];
-  PREV[id] = value;
-  return `<b class="mono" data-ctr data-from="${from}" data-to="${value}" data-fmt="${fmt||'money'}">${(fmt==='pct'?Math.round(from)+'%':money(from))}</b>`;
-}
-function runCounters(root){
-  (root||document).querySelectorAll('[data-ctr]').forEach(el=>{
-    const from=parseFloat(el.dataset.from), to=parseFloat(el.dataset.to), fmt=el.dataset.fmt;
-    delete el.dataset.ctr;
-    const out = v => fmt==='pct' ? Math.round(v)+'%' : money(v);
-    if(reduceMotion || from===to){ el.textContent=out(to); return; }
-    const dur=760, t0=performance.now();
-    if(to>from) el.classList.add('tick-up'); else el.classList.add('tick-dn');
-    setTimeout(()=>el.classList.remove('tick-up','tick-dn'),700);
-    (function step(now){
-      const p=clamp((now-t0)/dur,0,1);
-      const e=1-Math.pow(1-p,3);
-      el.textContent=out(from+(to-from)*e);
-      if(p<1) requestAnimationFrame(step);
-    })(t0);
-  });
-}
-
-/* ---------- boot title ---------- */
-'FINANCE FORWARD'.split('').forEach((c,i)=>{
-  const s=document.createElement('span');
-  s.textContent = c===' ' ? '\u00A0' : c;
-  s.style.animationDelay = (i*0.045)+'s';
-  $('#bootTitle').appendChild(s);
-});
-for(let i=0;i<14;i++){
-  const c=document.createElement('div');c.className='coin';
-  const sz=14+Math.random()*40;
-  c.style.cssText+=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;animation-duration:${12+Math.random()*16}s;animation-delay:${-Math.random()*20}s`;
-  $('#boot').appendChild(c);
-}
-
-/* ============================ CHARACTERS ============================ */
-const CHARS = [
-  {
-    id:'maya', name:'Maya', age:19, role:'College student · part-time barista',
-    skin:'#E8B893', hair:'#2E1D18', hairStyle:'bun', shirt:'#8C3B4A', accent:'#C9A227',
-    desc:'Sharp with numbers, terrible at saying no to a $7 latte. Juggling 15 credit hours and 18 work hours.',
-    story:'Maya is halfway through her sophomore year, pulling shifts at a campus coffee shop between classes. Her hours swing with the academic calendar — finals week is great for tips, winter break is not. Tuition is mostly covered by aid, but everything else is on her. She has never had more than $600 in the bank at one time, and she is starting to wonder whether that is a math problem or a habit problem.',
-    challenge:'Her income drops during school breaks, and she has never built a cushion for the months it does.',
-    income:1150, expenses:890, savings:340, debt:4200, rate:.045, debtLabel:'Student loan',
-    difficulty:3, volatility:.22
-  },
-  {
-    id:'jordan', name:'Jordan', age:22, role:'First job · logistics coordinator',
-    skin:'#C08457', hair:'#1A1210', hairStyle:'fade', shirt:'#3C5A6B', accent:'#F4EBDD',
-    desc:'Steady paycheck, zero debt, and a bedroom at their parents\' house they are ready to leave.',
-    story:'Six months into the first real job with a real salary, Jordan still lives at home. The plan is simple on paper: save enough for a deposit, first month, and furniture, then move out. The plan is harder in practice, because a steady paycheck is the easiest thing in the world to spend. Jordan has never invested a dollar and is not sure whether that is cautious or just avoidant.',
-    challenge:'No debt and decent income — the risk here is lifestyle creep swallowing the surplus.',
-    income:2850, expenses:1740, savings:900, debt:0, rate:0, debtLabel:'No debt',
-    difficulty:1, volatility:.04
-  },
-  {
-    id:'alex', name:'Alex', age:21, role:'Full-time warehouse · 40-min commute',
-    skin:'#F0C9A8', hair:'#8A4B2A', hairStyle:'wave', shirt:'#5B6E4F', accent:'#B44A3A',
-    desc:'Works hard, drives far, and owes $3,100 to a credit card that charges 22%.',
-    story:'Alex took the warehouse job because it paid better than anything else within driving distance. The catch is the driving — 80 minutes a day, and a car with 140,000 miles on it. The credit card started as a way to cover a transmission repair and quietly became a way to cover everything. The minimum payment feels manageable. The interest does not care how it feels.',
-    challenge:'High-interest debt compounds every single month it is not attacked.',
-    income:2400, expenses:1880, savings:150, debt:3100, rate:.22, debtLabel:'Credit card (22%)',
-    difficulty:4, volatility:.06
-  },
-  {
-    id:'priya', name:'Priya', age:24, role:'Freelance designer · project-based',
-    skin:'#8D5B3C', hair:'#241618', hairStyle:'long', shirt:'#6B1F2B', accent:'#C9A227',
-    desc:'Some months she out-earns everyone here. Some months she earns almost nothing.',
-    story:'Priya left a salaried studio job to freelance and has not regretted it, except on the fifteenth of every month when she checks her account. Three good clients keep the lights on, but invoices arrive when they arrive. She is good at the work and bad at the buffer — she treats a great month as proof things are fine rather than as fuel for the month that is not.',
-    challenge:'Income swings wildly. Averaging out only works if there is a cushion to average across.',
-    income:2500, expenses:2050, savings:1800, debt:900, rate:.14, debtLabel:'Equipment card (14%)',
-    difficulty:5, volatility:.52
-  },
-  {
-    id:'devin', name:'Devin', age:20, role:'Electrical apprentice · year two',
-    skin:'#5D3A26', hair:'#120C0A', hairStyle:'cap', shirt:'#42131B', accent:'#C9A227',
-    desc:'Real trade, real raises coming, and a truck loan that ate the whole down payment.',
-    story:'Devin is two years into a four-year apprenticeship, which means the pay goes up on a schedule and the work is guaranteed. It also means he bought a truck the week after his first raise, at 9% over 60 months. He does not regret the truck. He does quietly wonder what that money would be doing somewhere else, and whether he should keep wondering or actually run the numbers.',
-    challenge:'A large fixed loan payment locks up cash that could be building something.',
-    income:2200, expenses:1520, savings:600, debt:6500, rate:.09, debtLabel:'Truck loan (9%)',
-    difficulty:3, volatility:.05
-  }
-];
-
-/* ============================ MARKET (predetermined) ============================ */
-const MARKET = {
-  index:  [ 1.8, 2.4,-1.2, 3.1, 1.4,-6.8,-3.2, 4.6, 2.9, 5.4, 1.1, 3.3],
-  bonds:  [ 0.30,0.35,0.40,0.25,0.30,0.90,0.60,0.20,0.25,0.15,0.30,0.35],
-  stocks: [ 4.2,-3.1, 6.8,-2.4, 9.1,-14.2,-7.5,11.3, 3.8, 8.9,-4.6, 6.2],
-  cash:   [ 0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25,0.25]
-};
-const ASSETS = [
-  {k:'cash',  label:'Cash',          color:'#A66A6A', risk:'None'},
-  {k:'bonds', label:'Bonds',         color:'#8C6B4F', risk:'Low'},
-  {k:'index', label:'Index fund',    color:'#6B1F2B', risk:'Medium'},
-  {k:'stocks',label:'Single stocks', color:'#C9A227', risk:'High'}
-];
-
-const MONTHS = ['August','September','October','November','December','January','February','March','April','May','June','July'];
-const CHAPTERS = [
-  {at:0, n:'Chapter 01', t:'Getting Started'},
-  {at:2, n:'Chapter 02', t:'Unexpected Changes'},
-  {at:5, n:'Chapter 03', t:'Building Stability'},
-  {at:8, n:'Chapter 04', t:'Growing Wealth'},
-  {at:11,n:'Chapter 05', t:'Your Financial Future'}
-];
-
-const DIM_INFO = {
-  saving:   {label:'Saving',        why:'Are you putting money away before you spend it?'},
-  spending: {label:'Spending',      why:'Is discretionary spending in proportion to income?'},
-  debt:     {label:'Debt',          why:'Is the balance shrinking faster than interest grows?'},
-  investing:{label:'Investing',     why:'Are you investing consistently, not reactively?'},
-  emergency:{label:'Emergency fund',why:'Could you absorb a surprise without borrowing?'},
-  cashflow: {label:'Cash flow',     why:'Does more come in each month than goes out?'}
-};
-
-const SKILL_INFO = {
-  saving:    {label:'Saving',           levels:['Beginner','Consistent Saver','Emergency Planner','Financial Strategist']},
-  budgeting: {label:'Budgeting',        levels:['Beginner','Tracker','Planner','Architect']},
-  credit:    {label:'Credit',           levels:['Beginner','Aware','Disciplined','Creditworthy']},
-  investing: {label:'Investing',        levels:['Beginner','First Position','Steady Hand','Portfolio Builder']},
-  risk:      {label:'Risk Management',  levels:['Beginner','Cautious','Balanced','Strategist']},
-  emergency: {label:'Emergency Planning',levels:['Beginner','Prepared','Resilient','Unshakeable']}
-};
-
-const ACHIEVEMENTS = [
-  {id:'first500', ic:'🏆', t:'First $500',           d:'Reached $500 in savings.'},
-  {id:'efund',    ic:'🛡️', t:'Emergency Fund Builder',d:'Banked one full month of expenses.'},
-  {id:'crusher',  ic:'⚔️', t:'Debt Crusher',          d:'Cut your starting debt in half.'},
-  {id:'debtfree', ic:'🕊️', t:'Debt Free',             d:'Paid off every dollar you owed.'},
-  {id:'investor', ic:'📈', t:'Smart Investor',        d:'Invested in three consecutive months.'},
-  {id:'held',     ic:'🧊', t:'Held the Line',         d:'Did not panic-sell during the downturn.'},
-  {id:'saver',    ic:'💎', t:'Consistent Saver',      d:'Saved something four months running.'},
-  {id:'goalset',  ic:'🎯', t:'Goal Setter',           d:'Completed a goal you wrote yourself.'},
-  {id:'strategist',ic:'👑',t:'Financial Strategist',  d:'Four dimensions above 70 at once.'}
-];
-
-/* ============================ STATE ============================ */
-let S = null;
-function freshState(c){
-  return {
-    char:c, month:0, tab:'overview', phase:'decide',
-    cash:0, savings:c.savings, debt:c.debt, income:c.income, expenses:c.expenses,
-    port:{cash:0,bonds:0,index:0,stocks:0},
-    contributed:0, invested:0,
-    dims:{saving:38,spending:52,debt:c.debt>0?34:70,investing:12,emergency:20,cashflow:50},
-    xp:{saving:0,budgeting:0,credit:0,investing:0,risk:0,emergency:0},
-    goals:[], achievements:[], timeline:[], pending:[], history:[],
-    alloc:{save:0,debtPay:0,invest:0,spend:0},
-    streak:{save:0,invest:0}, usedEvents:[], choicesLog:[],
-    counterfactual:0, altNotes:[], heldDownturn:null, nwSeries:[],
-    usedShops:[], pendingShop:null, justMilestone:null, portHistory:[], savHistory:[], debtHistory:[]
-  };
-}
-let PENDING_GOALS = [];
-
-/* ============================ AVATAR ============================ */
-function avatar(c, expr='neutral', size=120){
-  const {skin,hair,hairStyle,shirt,accent}=c;
-  const uid = c.id+'-'+expr+'-'+Math.random().toString(36).slice(2,7);
-  const E = {
-    neutral:{eye:'M -6 0 a 6 6 0 0 1 12 0 a 6 6 0 0 1 -12 0', brow:0,  mouth:'M -9 0 q 9 5 18 0', blush:0,  tilt:0},
-    happy:  {eye:'M -7 2 q 7 -9 14 0',                          brow:-3, mouth:'M -11 -2 q 11 12 22 0', blush:.5, tilt:-2},
-    excited:{eye:'M -7 2 q 7 -11 14 0',                          brow:-6, mouth:'M -12 -3 q 12 17 24 0', blush:.7, tilt:-4},
-    worried:{eye:'M -5.5 0 a 5.5 5.5 0 0 1 11 0 a 5.5 5.5 0 0 1 -11 0', brow:9, mouth:'M -9 3 q 9 -6 18 0', blush:0, tilt:2},
-    nervous:{eye:'M -5 0 a 5 5 0 0 1 10 0 a 5 5 0 0 1 -10 0',   brow:12, mouth:'M -8 3 q 4 -4 8 1 q 4 4 8 -1', blush:.3,tilt:3},
-    proud:  {eye:'M -6.5 1 q 6.5 -8 13 0',                       brow:-4, mouth:'M -10 -1 q 10 10 20 0', blush:.35,tilt:-1},
-    sad:    {eye:'M -5.5 0 a 5.5 5.5 0 0 1 11 0 a 5.5 5.5 0 0 1 -11 0', brow:7, mouth:'M -9 4 q 9 -8 18 0', blush:0, tilt:4}
-  }[expr] || {};
-  const hairPath = {
-    bun:  `<circle cx="0" cy="-46" r="15" fill="${hair}"/><path d="M -34 -14 q 2 -38 34 -38 q 32 0 34 38 q -12 -20 -34 -20 q -22 0 -34 20 z" fill="${hair}"/>`,
-    fade: `<path d="M -32 -16 q 4 -34 32 -34 q 28 0 32 34 q -10 -14 -32 -14 q -22 0 -32 14 z" fill="${hair}"/>`,
-    wave: `<path d="M -34 -12 q 0 -40 34 -40 q 34 0 34 40 q -6 -14 -16 -8 q -10 -14 -22 -6 q -12 -8 -18 6 q -8 -4 -12 8 z" fill="${hair}"/>`,
-    long: `<path d="M -34 -14 q 2 -38 34 -38 q 32 0 34 38 l 4 44 q -14 8 -16 -6 l -2 -30 q -10 -14 -20 -14 q -10 0 -20 14 l -2 30 q -2 14 -16 6 z" fill="${hair}"/>`,
-    cap:  `<path d="M -33 -18 q 3 -34 33 -34 q 30 0 33 34 z" fill="${accent}"/><path d="M -36 -18 q 36 -8 72 0 q 4 8 -6 8 l -60 0 q -10 0 -6 -8 z" fill="${hair}"/>`
-  }[hairStyle];
-  return `<svg class="av" viewBox="-70 -80 140 150" width="${size}" height="${size}" aria-hidden="true">
-  <defs>
-    <radialGradient id="sk${uid}" cx="38%" cy="28%"><stop offset="0" stop-color="#fff" stop-opacity=".42"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
-    <radialGradient id="bg${uid}" cx="50%" cy="30%"><stop offset="0" stop-color="#fff" stop-opacity=".30"/><stop offset="1" stop-color="#fff" stop-opacity=".02"/></radialGradient>
-    <linearGradient id="sh${uid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${shirt}"/><stop offset="1" stop-color="${shirt}" stop-opacity=".72"/></linearGradient>
-  </defs>
-  <circle cx="0" cy="-6" r="66" fill="url(#bg${uid})"/>
-  <g style="transform:rotate(${E.tilt}deg);transform-origin:0px -10px;transition:transform .5s cubic-bezier(.2,.8,.3,1)">
-    <path d="M -46 70 q 2 -32 24 -40 l 44 0 q 22 8 24 40 z" fill="url(#sh${uid})"/>
-    <path d="M -11 6 l 22 0 l 0 22 l -22 0 z" fill="${skin}" opacity=".85"/>
-    <ellipse cx="-36" cy="-8" rx="6" ry="9" fill="${skin}"/><ellipse cx="36" cy="-8" rx="6" ry="9" fill="${skin}"/>
-    <path d="M -33 -14 q 0 -36 33 -36 q 33 0 33 36 q 0 34 -33 34 q -33 0 -33 -34 z" fill="${skin}"/>
-    <path d="M -33 -14 q 0 -36 33 -36 q 33 0 33 36 q 0 34 -33 34 q -33 0 -33 -34 z" fill="url(#sk${uid})"/>
-    ${hairPath}
-    <g fill="#3A2226">
-      <g transform="translate(-14,-6)"><path d="${E.eye}"/></g>
-      <g transform="translate(14,-6)"><path d="${E.eye}"/></g>
-    </g>
-    <g stroke="${hair}" stroke-width="3.4" stroke-linecap="round" fill="none" opacity=".9">
-      <path d="M -21 -20 q 7 -4 14 -1" transform="rotate(${-E.brow} -14 -20)"/>
-      <path d="M 21 -20 q -7 -4 -14 -1" transform="rotate(${E.brow} 14 -20)"/>
-    </g>
-    <ellipse cx="-24" cy="6" rx="8" ry="4.5" fill="#D97070" opacity="${E.blush*.55}"/>
-    <ellipse cx="24" cy="6" rx="8" ry="4.5" fill="#D97070" opacity="${E.blush*.55}"/>
-    <path d="${E.mouth}" transform="translate(0,14)" stroke="#8A3A44" stroke-width="3.4" fill="none" stroke-linecap="round"/>
-  </g></svg>`;
-}
-
-/* ============================ SCENES ============================ */
-function scene(kind){
-  const sky = {
-    car:      ['#7d3040','#3a1018'], laptop:['#5d3550','#2a1030'], home:['#6b4030','#2a1414'],
-    campus:   ['#4a5a3a','#1e2416'], work:  ['#3c5a6b','#161f28'], store:['#7a5a2a','#2a1c10'],
-    bank:     ['#4a3a6b','#171028'], market:['#6b1f2b','#2c0c12'], clinic:['#3a5a5a','#122020'],
-    sunrise:  ['#b8703a','#3a1018']
-  }[kind] || ['#6b1f2b','#2c0c12'];
-  const props = {
-    car:`<rect x="180" y="300" width="240" height="70" rx="22" fill="#2a0e14" opacity=".8"/>
-         <path d="M195 305 l25 -42 h160 l25 42 z" fill="#8d3444"/>
-         <circle cx="235" cy="372" r="26" fill="#1b0a0e"/><circle cx="365" cy="372" r="26" fill="#1b0a0e"/>
-         <circle cx="235" cy="372" r="10" fill="#5c2029"/><circle cx="365" cy="372" r="10" fill="#5c2029"/>
-         <path d="M300 250 q -8 -26 8 -40 M300 250 q 14 -20 4 -34" stroke="#C9A227" stroke-width="4" fill="none" opacity=".65" stroke-linecap="round"/>`,
-    laptop:`<path d="M240 340 h180 l30 34 h-240 z" fill="#3a1420"/>
-            <rect x="262" y="228" width="136" height="112" rx="8" fill="#2a0e18" stroke="#6b3040" stroke-width="3"/>
-            <path d="M290 258 l58 54 M348 258 l-58 54" stroke="#C9A227" stroke-width="5" stroke-linecap="round" opacity=".8"/>`,
-    home:`<path d="M170 380 v-120 l130 -78 l130 78 v120 z" fill="#4a2028"/>
-          <path d="M155 264 l145 -88 l145 88" stroke="#8d3444" stroke-width="14" fill="none" stroke-linejoin="round"/>
-          <rect x="258" y="300" width="84" height="80" fill="#2a0e14"/>
-          <rect x="200" y="286" width="42" height="42" rx="5" fill="#C9A227" opacity=".55"/>`,
-    campus:`<rect x="140" y="240" width="320" height="140" fill="#2e3a24"/>
-            <path d="M130 240 l170 -74 l170 74 z" fill="#465a36"/>
-            <rect x="200" y="292" width="34" height="88" fill="#18200f"/><rect x="366" y="292" width="34" height="88" fill="#18200f"/>
-            <rect x="278" y="278" width="44" height="102" rx="6" fill="#C9A227" opacity=".4"/>`,
-    work:`<rect x="120" y="200" width="120" height="180" fill="#22303c"/><rect x="256" y="150" width="130" height="230" fill="#2b3d4c"/>
-          <rect x="402" y="230" width="100" height="150" fill="#22303c"/>
-          ${[0,1,2,3].map(r=>[0,1,2].map(c=>`<rect x="${272+c*36}" y="${172+r*46}" width="20" height="24" fill="#C9A227" opacity="${.18+Math.random()*.4}"/>`).join('')).join('')}`,
-    store:`<rect x="150" y="220" width="300" height="160" fill="#3a2a18"/>
-           <path d="M140 220 h320 l-16 -36 h-288 z" fill="#8d3444"/>
-           <rect x="196" y="266" width="80" height="114" fill="#1e1408"/><rect x="324" y="266" width="80" height="114" fill="#1e1408"/>
-           <rect x="196" y="266" width="80" height="114" fill="#C9A227" opacity=".2"/>`,
-    bank:`<rect x="160" y="250" width="280" height="130" fill="#2a2040"/>
-          <path d="M150 250 l150 -80 l150 80 z" fill="#3d3060"/>
-          ${[0,1,2,3,4].map(i=>`<rect x="${186+i*54}" y="264" width="20" height="116" rx="4" fill="#C9A227" opacity=".4"/>`).join('')}`,
-    market:`<polyline points="120,300 180,268 240,296 300,214 360,258 420,168 480,206" fill="none" stroke="#C9A227" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" opacity=".85"/>
-            ${[0,1,2,3,4,5,6].map(i=>`<rect x="${132+i*50}" y="${310}" width="26" height="${30+Math.random()*70}" rx="5" fill="#f4ebdd" opacity=".14"/>`).join('')}`,
-    clinic:`<rect x="180" y="240" width="240" height="140" rx="12" fill="#1e3232"/>
-            <rect x="284" y="272" width="32" height="86" rx="6" fill="#f4ebdd" opacity=".7"/>
-            <rect x="257" y="299" width="86" height="32" rx="6" fill="#f4ebdd" opacity=".7"/>`,
-    sunrise:`<circle cx="300" cy="330" r="110" fill="#C9A227" opacity=".32"/>
-             <circle cx="300" cy="330" r="70" fill="#e8c877" opacity=".42"/>
-             ${[0,1,2,3,4,5].map(i=>`<rect x="${90+i*80}" y="${350-Math.random()*40}" width="46" height="120" fill="#2a0e14" opacity=".55"/>`).join('')}`
-  }[kind] || '';
-  return `<svg viewBox="0 0 600 400" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
-    <defs><linearGradient id="sky${kind}" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="${sky[0]}"/><stop offset="1" stop-color="${sky[1]}"/></linearGradient></defs>
-    <rect width="600" height="400" fill="url(#sky${kind})"/>
-    ${props}
-    <ellipse cx="300" cy="392" rx="220" ry="26" fill="#000" opacity=".28"/>
-  </svg>`;
-}
-
-/* ============================ NAV ============================ */
-function go(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
-  $('#'+id).classList.add('on');
-  window.scrollTo({top:0,behavior:'instant'});
-  if(id==='select') renderChars();
-  if(id==='goal') renderGoalPicker();
-}
-
-/* ============================ SELECT ============================ */
-function renderChars(){
-  $('#charGrid').innerHTML = CHARS.map(c=>`
-    <button class="char" onclick="openProfile('${c.id}')" aria-label="Play as ${c.name}">
-      <span class="diff-label">DIFFICULTY</span>
-      <span class="diff">${[1,2,3,4,5].map(i=>`<i class="${i<=c.difficulty?'f':''}"></i>`).join('')}</span>
-      ${avatar(c,'neutral',118)}
-      <h3>${c.name}, ${c.age}</h3>
-      <p class="role">${c.role}</p>
-      <p class="desc">${c.desc}</p>
-      <div class="reveal"><div class="stat-rows">
-        <div class="srow"><span>Monthly income</span><b>${money(c.income)}</b></div>
-        <div class="srow"><span>Monthly expenses</span><b>${money(c.expenses)}</b></div>
-        <div class="srow"><span>Savings</span><b>${money(c.savings)}</b></div>
-        <div class="srow"><span>${c.debtLabel}</span><b>${c.debt?money(c.debt):'—'}</b></div>
-      </div></div>
-    </button>`).join('');
-}
-
-function openProfile(id){
-  const c = CHARS.find(x=>x.id===id);
-  S = freshState(c);
-  $('#profBody').innerHTML = `
-    <div>${avatar(c,'neutral',280).replace('class="av"','class="av prof-av"')}</div>
-    <div>
-      <p class="eyebrow">Your life</p>
-      <h2>${c.name}</h2>
-      <p class="sub">${c.age} · ${c.role}</p>
-      <p class="story">${c.story}</p>
-      <div class="chal"><strong>The challenge:</strong> ${c.challenge}</div>
-      <div class="prof-stats">
-        <div class="pstat"><span>Income</span><b>${money(c.income)}</b></div>
-        <div class="pstat"><span>Expenses</span><b>${money(c.expenses)}</b></div>
-        <div class="pstat"><span>Savings</span><b>${money(c.savings)}</b></div>
-        <div class="pstat"><span>Debt</span><b>${c.debt?money(c.debt):'None'}</b></div>
+        <div class="reveal reveal-delay-1">
+          <p>Most students graduate without ever being taught how credit works, how to budget a paycheck, or how to recognize a scam. Finance Forward Network exists to close that gap, with content designed by students, for students, not repurposed textbook material.</p>
+          <p>We work at the intersection of two subjects that rarely get taught well together: personal finance and cybersecurity. Both are skills students need before they need them, not after something goes wrong.</p>
+        </div>
       </div>
-      <div class="prof-actions">
-        <button class="btn big" onclick="go('goal')">Set my goals →</button>
-        <button class="btn ghost" onclick="go('select')">Pick someone else</button>
-      </div>
-    </div>`;
-  go('profile');
-}
 
-/* ============================ GOALS ============================ */
-const GOAL_PRESETS = [
-  ['Emergency fund',3000],['Save $5,000',5000],['Pay off my debt',0],['Buy a car',4500],
-  ['Move into an apartment',3600],['Start investing',2000],['Save for next semester',2500],['Start a business',3000]
-];
-function renderGoalPicker(){
-  $('#goalChips').innerHTML = GOAL_PRESETS.map((g,i)=>
-    `<button class="chip" onclick="pickPreset(${i})">${g[0]}</button>`).join('');
-  drawGoalList();
-}
-function pickPreset(i){
-  const [n,a]=GOAL_PRESETS[i];
-  $('#gName').value=n;
-  $('#gAmt').value = a || Math.round((S.debt||1500));
-  document.querySelectorAll('.chip').forEach((c,j)=>c.classList.toggle('sel',j===i));
-}
-function addGoal(){
-  const n=$('#gName').value.trim(), a=parseFloat($('#gAmt').value);
-  if(!n){ $('#gName').focus(); return; }
-  if(!a||a<100){ $('#gAmt').focus(); return; }
-  if(PENDING_GOALS.length>=3) return;
-  PENDING_GOALS.push({name:n.toUpperCase(),target:Math.round(a),saved:0,done:false});
-  $('#gName').value='';$('#gAmt').value='';
-  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));
-  drawGoalList();
-}
-function delGoal(i){ PENDING_GOALS.splice(i,1); drawGoalList(); }
-function drawGoalList(){
-  $('#goalList').innerHTML = PENDING_GOALS.map((g,i)=>
-    `<div class="goal-item"><span>${g.name}</span><span><b>${money(g.target)}</b>
-      <button onclick="delGoal(${i})" aria-label="Remove ${g.name}">×</button></span></div>`).join('');
-  $('#startBtn').textContent = PENDING_GOALS.length ? 'Start my life →' : 'Start without a goal →';
-}
-
-function startLife(){
-  S.goals = PENDING_GOALS.map(g=>({...g}));
-  if(S.goals.length) S.xp.budgeting += 1;
-  S.cash = 0;
-  S.timeline.push({m:0,t:`${S.char.name}'s year begins`,d:`${money(S.savings)} saved${S.debt?`, ${money(S.debt)} owed`:', no debt'}.`,big:true});
-  go('dash');
-  buildNav();
-  openMonth();
-}
-
-/* ============================ MONTH ENGINE ============================ */
-function chapterFor(m){ let c=CHAPTERS[0]; CHAPTERS.forEach(x=>{if(m>=x.at)c=x}); return c; }
-function fixedExpenses(){ return S.expenses; }
-function monthIncome(){
-  const c=S.char;
-  if(c.volatility<.1) return c.income;
-  const seed = Math.sin((S.month+1)*12.9898 + c.id.length*78.233)*43758.5453;
-  const r = seed - Math.floor(seed);
-  return Math.round(c.income * (1 - c.volatility + r*c.volatility*2));
-}
-
-function openMonth(){
-  S.phase='decide';
-  const inc = monthIncome();
-  S.thisIncome = inc;
-  // debt interest
-  if(S.debt>0 && S.char.rate>0){
-    const i = S.debt * S.char.rate/12;
-    S.debt += i;
-    S.monthInterest = i;
-  } else S.monthInterest = 0;
-  // market move
-  applyMarket();
-  const left = inc - fixedExpenses();
-  S.cash = Math.max(0,left);
-  S.alloc = {save:0,debtPay:0,invest:0,spend:0};
-  renderAll();
-  maybeEvent();
-}
-
-function applyMarket(){
-  const m = S.month;
-  let delta = 0;
-  ASSETS.forEach(a=>{
-    const r = (MARKET[a.k][m]||0)/100;
-    const g = S.port[a.k]*r;
-    S.port[a.k]+=g; delta+=g;
-  });
-  S.marketDelta = delta;
-  if(Math.abs(delta)>1){
-    S.timeline.push({m, t: delta>0?'Portfolio gained':'Portfolio lost',
-      d:'Market movement across your holdings.', v:delta});
-  }
-}
-
-function portValue(){ return ASSETS.reduce((s,a)=>s+S.port[a.k],0); }
-function netWorth(){ return S.savings + portValue() - S.debt; }
-
-function nextMonth(){
-  if(S.phase!=='decide') return;
-  const a=S.alloc;
-  // apply allocation
-  if(a.save>0){ S.savings+=a.save; S.streak.save++; S.xp.saving+=a.save>200?2:1; }
-  else S.streak.save=0;
-  if(a.debtPay>0){ const p=Math.min(a.debtPay,S.debt); S.debt-=p; S.xp.credit+=p>150?2:1; S.savings+=(a.debtPay-p); }
-  if(a.invest>0){
-    depositToPortfolio(a.invest);
-    S.contributed+=a.invest; S.streak.invest++; S.xp.investing+=2;
-  } else S.streak.invest=0;
-  if(a.spend>0) S.xp.budgeting += a.spend > S.thisIncome*0.25 ? 0 : 1;
-
-  // goals absorb savings progress
-  const added = a.save;
-  if(added>0 && S.goals.length){
-    const per = added/S.goals.filter(g=>!g.done).length;
-    S.goals.forEach(g=>{ if(!g.done) g.saved=Math.min(g.target,g.saved+per); });
-  }
-  S.goals.forEach(g=>{
-    if(!g.done && g.saved>=g.target){
-      g.done=true; S.xp.saving+=3;
-      unlock('goalset');
-      S.timeline.push({m:S.month,t:`Goal complete: ${g.name}`,d:`Reached ${money(g.target)}.`,win:true});
-      toast('🎯','Goal complete',g.name);
-    }
-  });
-
-  // leftover cash rolls into savings
-  const leftover = S.cash - (a.save+a.debtPay+a.invest+a.spend);
-  if(leftover>0) S.savings += leftover;
-
-  recalcDims();
-  checkAchievements();
-  S.nwSeries.push(netWorth());
-  S.portHistory.push(portValue());
-  S.savHistory.push(S.savings);
-  S.debtHistory.push(S.debt);
-  S.justMilestone=null;
-  S.history.push({m:S.month,income:S.thisIncome,exp:fixedExpenses(),save:a.save,debt:a.debtPay,inv:a.invest,spend:a.spend,nw:netWorth()});
-
-  // pending consequences
-  const due = S.pending.filter(p=>p.at===S.month+1);
-  S.pending = S.pending.filter(p=>p.at!==S.month+1);
-
-  S.month++;
-  if(S.month>=12){ finish(); return; }
-  openMonth();
-  due.forEach(p=>applyEffect(p.effect, p.title, p.note));
-  if(due.length) renderAll();
-}
-
-function depositToPortfolio(amt){
-  // default balanced allocation unless player set one
-  const mix = S.mix || {cash:.1,bonds:.2,index:.55,stocks:.15};
-  ASSETS.forEach(a=> S.port[a.k]+= amt*(mix[a.k]||0));
-}
-
-/* ---------- dimensions ---------- */
-function recalcDims(){
-  const inc = S.thisIncome||S.income;
-  const d=S.dims;
-  const savedThis = S.alloc.save;
-  const rate = savedThis/Math.max(1,inc);
-  d.saving = clamp(d.saving + (rate>.15?7:rate>.07?4:rate>0?1:-6), 0,100);
-  const spendRate = S.alloc.spend/Math.max(1,inc);
-  d.spending = clamp(d.spending + (spendRate>.22?-8:spendRate>.12?-2:3), 0,100);
-  if(S.char.debt>0){
-    const prog = 1 - S.debt/Math.max(1,S.char.debt);
-    d.debt = clamp(28 + prog*72, 0, 100);
-  } else d.debt = clamp(d.debt + (S.debt>0?-8:1),0,100);
-  d.investing = clamp(d.investing + (S.alloc.invest>0? (S.streak.invest>2?8:5) : -3),0,100);
-  const months = S.savings/Math.max(1,fixedExpenses());
-  d.emergency = clamp(months*30, 0, 100);
-  const flow = (S.thisIncome - fixedExpenses())/Math.max(1,S.thisIncome);
-  d.cashflow = clamp(35 + flow*160, 0, 100);
-}
-
-/* ---------- achievements ---------- */
-function unlock(id){
-  if(S.achievements.includes(id)) return;
-  S.achievements.push(id);
-  const a = ACHIEVEMENTS.find(x=>x.id===id);
-  toast(a.ic, a.t, a.d);
-  if(S.month>0) S.justMilestone = {t:a.t, d:a.d};
-  S.timeline.push({m:S.month,t:`Achievement: ${a.t}`,d:a.d,win:true});
-}
-function checkAchievements(){
-  if(S.savings>=500) unlock('first500');
-  if(S.savings>=fixedExpenses()) unlock('efund');
-  if(S.char.debt>0 && S.debt<=S.char.debt/2) unlock('crusher');
-  if(S.char.debt>0 && S.debt<=0.5) unlock('debtfree');
-  if(S.streak.invest>=3) unlock('investor');
-  if(S.streak.save>=4) unlock('saver');
-  if(Object.values(S.dims).filter(v=>v>=70).length>=4) unlock('strategist');
-}
-function toast(ic,t,d){
-  const el=document.createElement('div');
-  el.className='toast';
-  el.innerHTML=`<span class="ic">${ic}</span><div><b>${t}</b><span>${d}</span></div>`;
-  $('#toasts').appendChild(el);
-  setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),400)},4200);
-}
-function floater(text,cls,x,y){
-  const el=document.createElement('div');
-  el.className='floater '+cls; el.textContent=text;
-  el.style.left=(x||window.innerWidth/2)+'px'; el.style.top=(y||window.innerHeight/2)+'px';
-  el.style.color = cls==='up'?'#4F7A5B':'#B44A3A';
-  document.body.appendChild(el);
-  setTimeout(()=>el.remove(),1500);
-}
-
-/* ============================ EVENTS ============================ */
-const EVENTS = [
-  {
-    id:'phone', minM:1, maxM:4, kind:'emergency', scene:'store', mood:'worried',
-    title:'Unexpected expense', head:'Your phone screen shattered.', cost:380,
-    lead:'It slid off the roof of the car. The repair shop wants $380, and you need the phone for work shifts.',
-    choices:[
-      {b:'Pay from savings', now:'Savings −$380', later:'No interest, no debt. Cushion is thinner.',
-       eff:{savings:-380,dims:{emergency:-6,debt:2},xp:{emergency:2}}, why:'Paying cash for a small emergency is almost always cheaper than financing it. The cost of using savings is that your buffer shrinks — so the next surprise is riskier until you rebuild it.', cf:-380},
-      {b:'Put it on credit', now:'Debt +$380', later:'Interest accrues monthly until cleared.',
-       eff:{debt:380,dims:{debt:-8,credit:-4}}, why:'A $380 balance at 22% costs about $7 in the first month alone, and keeps costing until it is gone. Credit is a tool for timing, not a substitute for having money.', cf:-448, alt:'Financed the phone instead of paying cash'},
-      {b:'Use a cheap old phone', now:'No cost', later:'Risk: missed shifts if it fails.',
-       eff:{dims:{spending:6}}, delayed:{p:.5,in:2,title:'The backup phone died',eff:{savings:-260},note:'The old phone finally quit mid-shift. Replacement: $260.'},
-       why:'Delaying a purchase is genuinely free sometimes and expensive other times. The question is not "can I avoid this today" but "what does it cost if the stopgap fails."', cf:-190}
-    ]
-  },
-  {
-    id:'laptop', minM:2, maxM:6, kind:'emergency', scene:'laptop', mood:'worried',
-    title:'Unexpected expense', head:'Your laptop will not turn on.', cost:720,
-    lead:'It is four years old and the repair quote is nearly the price of a replacement. You need something that works this week.',
-    choices:[
-      {b:'Pay from savings', now:'Savings −$720', later:'Own it outright. Buffer drops.',
-       eff:{savings:-720,dims:{emergency:-9},xp:{emergency:2}}, why:'Big cash purchases hurt in the moment and cost nothing afterward. That is the trade: a visible hit now instead of an invisible one spread across a year.', cf:-720},
-      {b:'Buy a budget model', now:'Savings −$430', later:'May need replacing sooner.',
-       eff:{savings:-430,dims:{spending:5,emergency:-4},xp:{budgeting:2}},
-       delayed:{p:.4,in:4,title:'The budget laptop is struggling',eff:{savings:-220},note:'It slowed to a crawl. You paid $220 for an upgrade to keep it usable.'},
-       why:'Cheaper is not automatically smarter. Cost per year of use is the number that matters — a $430 machine that lasts two years costs more annually than a $720 one that lasts five.', cf:-518},
-      {b:'Finance over 12 months', now:'Debt +$720', later:'Monthly payment plus interest.',
-       eff:{debt:720,dims:{debt:-9,credit:-5}}, why:'Monthly payments make large numbers feel small. That is exactly why they are worth doing the arithmetic on: twelve payments of $67 is $804, not $720.', cf:-804, alt:'Financed the laptop'}
-    ]
-  },
-  {
-    id:'car', minM:3, maxM:9, kind:'emergency', scene:'car', mood:'nervous',
-    title:'Unexpected expense', head:'Your car needs a major repair.', cost:850,
-    lead:'The transmission is slipping. The mechanic says it will not survive another month of your commute.',
-    choices:[
-      {b:'Pay from savings', now:'Savings −$850', later:'Avoid interest entirely.',
-       eff:{savings:-850,dims:{emergency:-10,debt:3},xp:{emergency:3,risk:2}}, why:'This is what an emergency fund is for. Every dollar you had saved is a dollar you did not have to borrow at 22% — that is the entire return on keeping a cushion.', cf:-850},
-      {b:'Charge it', now:'Debt +$850', later:'Interest compounds monthly.',
-       eff:{debt:850,dims:{debt:-12,credit:-6}}, why:'Emergencies are not rare — they are just unscheduled. Borrowing for one predictable-in-aggregate event usually means borrowing for the next one too.', cf:-1010, alt:'Charged the car repair to credit'},
-      {b:'Delay and take the bus', now:'No cost now', later:'Longer commute. Repair may worsen.',
-       eff:{expenses:60,dims:{spending:4,risk:-4}},
-       delayed:{p:.65,in:2,title:'The transmission failed completely',eff:{savings:-1400},note:'What was an $850 repair became a $1,400 rebuild.'},
-       why:'Deferred maintenance is a loan you did not agree to. Sometimes the gamble pays off; when it does not, the bill is usually larger than the original one.', cf:-1250}
-    ]
-  },
-  {
-    id:'raise', minM:4, maxM:8, kind:'choice', scene:'work', mood:'nervous',
-    title:'An opening', head:'You could ask for more hours.', cost:0,
-    lead:'Your manager has extra shifts to fill. More money, less time — and you are already stretched.',
-    choices:[
-      {b:'Take the extra hours', now:'Income +$260/mo', later:'Less time. Higher burnout risk.',
-       eff:{income:260,dims:{cashflow:8},xp:{budgeting:2}},
-       delayed:{p:.3,in:3,title:'You burned out',eff:{income:-160},note:'You cut back on hours to recover. Income dropped again.'},
-       why:'Increasing income is usually more powerful than trimming expenses, because expenses have a floor and income does not. But time is a real cost, and exhaustion has a way of undoing the gain.', cf:780},
-      {b:'Ask for a raise instead', now:'Uncertain', later:'Could be a permanent increase.',
-       eff:{dims:{cashflow:2},xp:{risk:3}},
-       delayed:{p:.55,in:2,title:'Your raise came through',eff:{income:180},note:'A permanent $180/month increase.'},
-       why:'A raise compounds across every future month; extra shifts stop the moment you do. Asking has an awkward downside and a durable upside.', cf:900},
-      {b:'Keep your schedule', now:'No change', later:'Protect time and energy.',
-       eff:{dims:{spending:3}}, why:'Saying no is a legitimate financial decision. Protecting your capacity to keep earning at all is worth something, even though it never shows up on a statement.', cf:0}
-    ]
-  },
-  {
-    id:'trip', minM:3, maxM:10, kind:'choice', scene:'sunrise', mood:'happy',
-    title:'A decision', head:'Your friends booked a trip.', cost:550,
-    lead:'Four days away, split six ways. It is $550 all-in and everyone is going.',
-    choices:[
-      {b:'Go on the trip', now:'Cash −$550', later:'No financial upside. Real life upside.',
-       eff:{savings:-550,dims:{spending:-6,saving:-3}}, why:'Not every dollar has to be optimized. A budget that leaves no room for being a person is a budget people abandon. The goal is that this was planned for, not that it never happens.', cf:-550},
-      {b:'Go, but do it cheaply', now:'Cash −$260', later:'Fewer extras, same trip.',
-       eff:{savings:-260,dims:{spending:4},xp:{budgeting:3}}, why:'Most spending is not binary. Finding the version of a thing you can actually afford is the single most transferable budgeting skill there is.', cf:-260},
-      {b:'Sit this one out', now:'No cost', later:'Savings intact.',
-       eff:{dims:{saving:5,spending:5},xp:{saving:2}}, why:'Skipping something costs nothing on paper. Whether it costs something in practice depends on how often you do it — sustainability matters more than any single month.', cf:0}
-    ]
-  },
-  {
-    id:'housing', minM:5, maxM:10, kind:'emergency', scene:'home', mood:'worried',
-    title:'Unexpected expense', head:'Your rent is going up.', cost:0,
-    lead:'The renewal notice adds $140 a month starting next month. Moving costs money too.',
-    choices:[
-      {b:'Absorb the increase', now:'Expenses +$140/mo', later:'Stability, tighter margin.',
-       eff:{expenses:140,dims:{cashflow:-8}}, why:'Fixed costs are the hardest thing to change and the most powerful thing to control. A $140 monthly increase is $1,680 a year that can no longer go anywhere else.', cf:-1680},
-      {b:'Find a roommate', now:'Expenses −$210/mo', later:'Less space and privacy.',
-       eff:{expenses:-210,dims:{cashflow:10},xp:{budgeting:3}}, why:'Housing is the largest line item in almost every young person\'s budget, which makes it the highest-leverage one to attack. Small percentage changes here beat large ones anywhere else.', cf:2520},
-      {b:'Move somewhere cheaper', now:'Cash −$900 now, −$90/mo after', later:'Upfront cost, ongoing saving.',
-       eff:{savings:-900,expenses:-90,dims:{cashflow:5},xp:{risk:2}}, why:'Some savings require spending first. The question is the payback period: $900 to save $90 a month breaks even in ten months, and everything after that is profit.', cf:180}
-    ]
-  },
-  {
-    id:'gap', minM:6, maxM:10, kind:'emergency', scene:'work', mood:'sad',
-    title:'Income interruption', head:'Your hours were cut this month.', cost:0,
-    lead:'Slow season. Your next paycheck will be about $700 lighter, and you found out five days before rent.',
-    choices:[
-      {b:'Cover it from savings', now:'Savings −$700', later:'You absorb it without borrowing.',
-       eff:{savings:-700,dims:{emergency:-8},xp:{emergency:3,risk:2}}, why:'This is the scenario emergency funds are built for — not disasters, just gaps. Three months of expenses saved turns a crisis into an inconvenience.', cf:-700},
-      {b:'Cover it with credit', now:'Debt +$700', later:'Interest until repaid.',
-       eff:{debt:700,dims:{debt:-10,credit:-6}}, why:'Borrowing during an income gap is the most expensive time to borrow, because you are least able to repay quickly. The cost is not the $700 — it is how long it stays.', cf:-830, alt:'Borrowed through the income gap'},
-      {b:'Pick up gig work', now:'+$420 this month', later:'Costs time and energy.',
-       eff:{cash:420,dims:{cashflow:5},xp:{risk:2,budgeting:2}}, why:'Income flexibility is its own kind of insurance. Knowing you can add $400 in a bad month changes how much cushion you need to feel safe.', cf:420}
-    ]
-  },
-  {
-    id:'crash', at:5, kind:'market', scene:'market', mood:'nervous',
-    title:'Market update', head:'The market fell sharply.', cost:0,
-    lead:'A broad selloff hit this month. Your portfolio is down and every headline is telling you to do something.',
-    choices:[
-      {b:'Sell everything', now:'Losses become permanent', later:'Cash is safe. Recovery is missed.',
-       eff:{sell:true,dims:{investing:-16,risk:-10}}, why:'Selling after a fall converts a paper loss into a real one and takes you out of the recovery. In this simulation the market recovered over the following months — which is common historically, though never guaranteed.', cf:-1, alt:'Sold at the bottom of the downturn'},
-      {b:'Hold', now:'No change', later:'You stay invested through the recovery.',
-       eff:{hold:true,dims:{investing:10,risk:12},xp:{investing:3,risk:4}}, why:'Doing nothing is an active decision and often the hardest one. Time in the market has historically mattered more than timing it — but this is a simulation, not a promise.', cf:0},
-      {b:'Invest more', now:'Cash −$300 into the dip', later:'More upside if it recovers. More loss if it does not.',
-       eff:{buy:300,dims:{investing:12,risk:6},xp:{investing:4,risk:3}}, why:'Buying during a decline lowers your average cost — if the recovery comes. That "if" is doing real work: this strategy also amplifies losses when a downturn keeps going.', cf:220}
-    ]
-  },
-  {
-    id:'carbuy', minM:99, maxM:99, kind:'purchase', scene:'store', mood:'excited',
-    title:'A major purchase', head:'You are shopping for a car.', cost:0,
-    lead:'Your options range from a cash beater to a financed newer model. Look past the sticker at what it costs you every month.',
-    choices:[
-      {b:'$2,400 used, paid cash', now:'Savings −$2,400', later:'+$95/mo maintenance. No payment.',
-       eff:{savings:-2400,expenses:95,dims:{debt:6,spending:5},xp:{budgeting:3}}, why:'Owning outright means the monthly cost is only fuel, insurance, and repairs. Older cars trade a predictable payment for unpredictable maintenance.', cf:-2400},
-      {b:'$11,000 financed', now:'Debt +$11,000', later:'+$230/mo payment, +$140/mo insurance.',
-       eff:{debt:11000,expenses:370,dims:{debt:-16,cashflow:-12,credit:-6}}, why:'A car payment is a subscription to a depreciating asset. The purchase price is the small number; the monthly total cost of ownership is the one that shapes your next five years.', cf:-4400, alt:'Financed an $11,000 car'},
-      {b:'Skip it, keep commuting', now:'No cost', later:'Transit costs +$70/mo. No debt.',
-       eff:{expenses:70,dims:{spending:8,debt:4},xp:{budgeting:2,saving:2}}, why:'The cheapest car is frequently the one you do not buy. If transit works, the difference compounds into savings for years.', cf:1200}
-    ]
-  },
-  {
-    id:'cardoffer', minM:2, maxM:7, kind:'choice', scene:'bank', mood:'neutral',
-    title:'An offer', head:'A card with 0% for 12 months.', cost:0,
-    lead:'No interest for a year, then 26.99%. There is a $95 annual fee and a $200 sign-up bonus.',
-    choices:[
-      {b:'Take it and transfer debt', now:'Debt interest pauses', later:'Rate jumps after 12 months.',
-       eff:{ratecut:true,dims:{credit:6,debt:8},xp:{credit:4}}, why:'A 0% window is genuinely useful — but only if you have a plan to clear the balance before it closes. Otherwise you have moved the debt, not reduced it.', cf:400},
-      {b:'Take it for the bonus, do not use it', now:'+$200', later:'Temptation sits in your wallet.',
-       eff:{savings:200,dims:{credit:-2,spending:-3}},
-       delayed:{p:.45,in:3,title:'The new card got used',eff:{debt:480},note:'Available credit turned into $480 of spending.'},
-       why:'Sign-up bonuses are real money. They are also priced by companies who know most people will carry a balance eventually — the bonus is the cost of acquiring you.', cf:200},
-      {b:'Decline', now:'No change', later:'One less line of credit to manage.',
-       eff:{dims:{credit:3,risk:4},xp:{risk:2}}, why:'Turning down credit you do not have a use for is not timidity. Every open line is a decision you will have to keep making.', cf:0}
-    ]
-  },
-  {
-    id:'dental', minM:2, maxM:9, kind:'emergency', scene:'clinic', mood:'worried',
-    title:'Unexpected expense', head:'You need urgent dental work.', cost:430,
-    lead:'A cracked molar. It is not optional and it is not covered. The clinic wants $430 or a payment plan.',
-    choices:[
-      {b:'Pay it now', now:'Savings −$430', later:'Done. No follow-on cost.',
-       eff:{savings:-430,dims:{emergency:-6},xp:{emergency:2}}, why:'Health costs are the emergency category most people underestimate, because they feel like bad luck rather than a budget line. Treating them as expected changes how much cushion feels like enough.', cf:-430},
-      {b:'Clinic payment plan', now:'$78/mo for 6 months', later:'Interest-free, but it ties up cash flow.',
-       eff:{expenses:78,dims:{cashflow:-5,credit:2}},
-       delayed:{p:1,in:6,title:'Dental plan paid off',eff:{expenses:-78},note:'Six payments complete. That $78 is yours again.'},
-       why:'An interest-free plan is genuinely cheap money. The real cost is flexibility: for six months, $78 of every paycheck is already spoken for.', cf:-430},
-      {b:'Wait and see', now:'No cost', later:'Risk: it gets worse and more expensive.',
-       eff:{dims:{risk:-6,spending:3}},
-       delayed:{p:.7,in:2,title:'The tooth got worse',eff:{savings:-980},note:'What was a $430 filling became a $980 root canal.'},
-       why:'Some delays are free and some are compounding. Medical and mechanical problems tend to be the compounding kind — the bill grows while you decide.', cf:-1116}
-    ]
-  },
-  {
-    id:'lost', minM:1, maxM:8, kind:'emergency', scene:'campus', mood:'sad',
-    title:'Unexpected expense', head:'Your bag was stolen.', cost:290,
-    lead:'Keys, headphones, a textbook and your bank card. Replacing everything comes to about $290, plus a week of hassle.',
-    choices:[
-      {b:'Replace it all now', now:'Savings −$290', later:'Back to normal quickly.',
-       eff:{savings:-290,dims:{emergency:-4},xp:{emergency:1}}, why:'Small emergencies are the most common kind and the easiest to absorb — but only if a buffer exists. Without one, a $290 problem becomes a credit balance you carry for a year.', cf:-290},
-      {b:'Replace only the essentials', now:'Savings −$120', later:'Manage without the rest.',
-       eff:{savings:-120,dims:{spending:6,saving:3},xp:{budgeting:3}}, why:'Separating "I lost it" from "I need to replace it" is a surprisingly large lever. Not everything that was in the bag was doing a job.', cf:-120},
-      {b:'Claim on renter\'s insurance', now:'−$100 deductible', later:'Premium may rise later.',
-       eff:{savings:-100,dims:{risk:5},xp:{risk:3}},
-       delayed:{p:.5,in:4,title:'Your premium went up',eff:{expenses:14},note:'Insurance rose $14/month after the claim.'},
-       why:'Insurance is for losses you could not absorb. Claiming on small ones can cost more over time than paying them yourself — the deductible is only half the price.', cf:-268}
-    ]
-  },
-  {
-    id:'school', minM:1, maxM:5, kind:'emergency', scene:'campus', mood:'nervous',
-    title:'A large school expense', head:'Course fees came due early.', cost:500,
-    lead:'A lab fee and required materials, $500, payable before the term starts. There is no version of this that waits.',
-    choices:[
-      {b:'Pay from savings', now:'Savings −$500', later:'Cushion drops, no interest.',
-       eff:{savings:-500,dims:{emergency:-7},xp:{emergency:2}}, why:'Predictable-but-irregular costs — tuition, registration, insurance renewals — are the ones worth saving toward monthly. They are not really emergencies; they are bills you have not scheduled yet.', cf:-500},
-      {b:'Add it to your loan', now:'Debt +$500', later:'Low rate, but longer repayment.',
-       eff:{debt:500,dims:{debt:-6}}, why:'Student debt is usually the cheapest borrowing available, which makes it the least bad option here — and the easiest to keep reaching for until the total stops feeling real.', cf:-560, alt:'Added course fees to your loan'},
-      {b:'Pick up extra shifts', now:'+$380 this month', later:'Less study time.',
-       eff:{cash:380,dims:{cashflow:4},xp:{risk:2,budgeting:2}},
-       delayed:{p:.35,in:2,title:'Your grades slipped',eff:{savings:-150},note:'You dropped a class and forfeited $150 of the fee.'},
-       why:'Trading time for money is only a good deal when you have time to trade. During a heavy term, the hidden cost can outrun the visible gain.', cf:230}
-    ]
-  }
-];
-
-/* ============================ SHOPPING SCENES (§13) ============================ */
-const PIC = {
-  laptopA:`<svg viewBox="0 0 90 60"><path d="M18 12h54v32H18z" fill="#4a3020" stroke="#C9A227" stroke-width="2"/><path d="M10 46h70l6 8H4z" fill="#6b4630"/></svg>`,
-  laptopB:`<svg viewBox="0 0 90 60"><path d="M16 8h58v36H16z" fill="#2f3f4a" stroke="#9fb8c8" stroke-width="2"/><path d="M8 46h74l7 9H1z" fill="#54707f"/></svg>`,
-  laptopC:`<svg viewBox="0 0 90 60"><path d="M14 6h62v38H14z" fill="#1e2a33" stroke="#C9A227" stroke-width="2.5"/><path d="M20 12h50v26H20z" fill="#C9A227" opacity=".28"/><path d="M6 46h78l8 9H-2z" fill="#8c9aa4"/></svg>`,
-  carA:`<svg viewBox="0 0 110 60"><path d="M12 40h86v10H12z" fill="#6b4630"/><path d="M24 40l10-16h42l10 16z" fill="#8a5a3a"/><circle cx="32" cy="51" r="8" fill="#241410"/><circle cx="80" cy="51" r="8" fill="#241410"/></svg>`,
-  carB:`<svg viewBox="0 0 110 60"><path d="M10 38h90v12H10z" fill="#3c5a6b"/><path d="M24 38l11-18h40l11 18z" fill="#5b7f94"/><circle cx="32" cy="51" r="8.5" fill="#141c22"/><circle cx="80" cy="51" r="8.5" fill="#141c22"/></svg>`,
-  carC:`<svg viewBox="0 0 110 60"><path d="M8 36h94v14H8z" fill="#6B1F2B"/><path d="M23 36l12-20h42l12 20z" fill="#a03a4c"/><path d="M30 34l8-13h34l8 13z" fill="#C9A227" opacity=".4"/><circle cx="31" cy="51" r="9" fill="#1a0d10"/><circle cx="81" cy="51" r="9" fill="#1a0d10"/></svg>`,
-  bus:`<svg viewBox="0 0 90 60"><rect x="10" y="14" width="70" height="32" rx="6" fill="#4a5a3a"/><rect x="16" y="20" width="18" height="14" fill="#C9A227" opacity=".45"/><rect x="38" y="20" width="18" height="14" fill="#C9A227" opacity=".45"/><circle cx="26" cy="49" r="7" fill="#1a2010"/><circle cx="64" cy="49" r="7" fill="#1a2010"/></svg>`,
-  roomA:`<svg viewBox="0 0 90 60"><rect x="14" y="30" width="62" height="20" rx="4" fill="#6b4630"/><rect x="20" y="20" width="18" height="12" fill="#8a5a3a"/></svg>`,
-  roomB:`<svg viewBox="0 0 90 60"><rect x="10" y="26" width="70" height="24" rx="6" fill="#3c5a6b"/><rect x="16" y="14" width="24" height="14" rx="3" fill="#5b7f94"/><rect x="52" y="16" width="22" height="12" rx="3" fill="#5b7f94"/></svg>`,
-  roomC:`<svg viewBox="0 0 90 60"><rect x="8" y="24" width="74" height="26" rx="8" fill="#6B1F2B"/><rect x="14" y="10" width="26" height="16" rx="4" fill="#a03a4c"/><rect x="50" y="12" width="26" height="14" rx="4" fill="#C9A227" opacity=".5"/></svg>`
-};
-const SHOPS = {
-  laptop:{
-    at:3, who:['maya','jordan','alex','priya','devin'], scene:'store', mood:'excited', head:'You need a laptop for school and work',
-    band:'Three real options are on the table. The sticker price is only part of what each one costs you.',
-    lead:'Yours is failing and you cannot submit coursework without one. Look at what each choice does to your savings — and how long each is likely to last.',
-    items:[
-      {n:'Refurbished budget', pic:'laptopA', price:340, q:2, life:'~2 years',
-       meta:['<em>Per year of use</em> ≈ $170','<em>Warranty</em> 90 days','<em>Savings after</em> {AFTER}'],
-       opp:'Leaves the most in your account, but you are likely buying again inside two years.',
-       eff:{savings:-340,dims:{spending:6,emergency:-4},xp:{budgeting:2}},
-       delayed:{p:.45,in:4,title:'The refurbished laptop failed',eff:{savings:-300},note:'It stopped charging. You spent $300 on a replacement.'},
-       why:'Cheapest up front is not cheapest overall. Cost per year of use is the comparison that matters: $340 over two years is more expensive annually than $760 over five.'},
-      {n:'Mid-range new', pic:'laptopB', price:640, q:4, life:'~4 years',
-       meta:['<em>Per year of use</em> ≈ $160','<em>Warranty</em> 1 year','<em>Savings after</em> {AFTER}'],
-       opp:'The middle option is usually the boring right answer, which is why it is easy to talk yourself out of.',
-       eff:{savings:-640,dims:{spending:3,emergency:-6},xp:{budgeting:3,risk:2}},
-       why:'Matching the tool to the actual job — not the cheapest, not the best — is most of what good spending decisions look like in practice.'},
-      {n:'Premium, financed', pic:'laptopC', price:1290, q:5, life:'~5 years',
-       meta:['<em>Monthly</em> $112 × 12','<em>Total paid</em> $1,344','<em>Savings after</em> {AFTER}'],
-       opp:'Keeps your savings untouched today by committing $112 of every month for a year.',
-       eff:{debt:1290,expenses:0,dims:{debt:-10,credit:-5,cashflow:-4}},
-       cf:-704, alt:'Financed a premium laptop',
-       why:'Financing splits one visible number into twelve invisible ones. The machine may genuinely be better — but you are now locked into a payment regardless of what next month brings.'}
-    ]
-  },
-  car:{
-    at:8, who:['alex','devin','jordan'], scene:'store', mood:'nervous', head:'You are shopping for a car',
-    band:'Compare the monthly total cost of ownership, not the sticker price.',
-    lead:'Every option below has an upfront cost and a monthly cost. The second one is what actually shapes your next few years.',
-    items:[
-      {n:'Older used, cash', pic:'carA', price:2400, q:2, life:'high maintenance',
-       meta:['<em>Monthly</em> $95 upkeep + $80 insurance','<em>Debt added</em> None','<em>Savings after</em> {AFTER}'],
-       opp:'No payment ever. You trade a predictable bill for unpredictable repairs.',
-       eff:{savings:-2400,expenses:175,dims:{debt:6,spending:5},xp:{budgeting:3}},
-       delayed:{p:.4,in:3,title:'The used car needed work',eff:{savings:-560},note:'A $560 repair. This is the risk you accepted.'},
-       why:'Owning outright removes the payment but not the cost. Older cars shift spending from scheduled to unscheduled — which is fine if you have a cushion, and painful if you do not.'},
-      {n:'Certified used, financed', pic:'carB', price:11000, q:4, life:'reliable',
-       meta:['<em>Monthly</em> $230 loan + $140 insurance','<em>Total interest</em> ≈ $1,180','<em>Debt added</em> $11,000'],
-       opp:'$370 a month is $4,440 a year that cannot go to savings, debt, or investing.',
-       eff:{debt:11000,expenses:370,dims:{debt:-16,cashflow:-12,credit:-6}},
-       cf:-4400, alt:'Financed an $11,000 car',
-       why:'A car payment is a subscription to something that loses value. It is sometimes the right call — but the monthly figure, not the price tag, is what you are actually signing up for.'},
-      {n:'New, fully financed', pic:'carC', price:23000, q:5, life:'warranty covered',
-       meta:['<em>Monthly</em> $420 loan + $190 insurance','<em>Total interest</em> ≈ $3,400','<em>Debt added</em> $23,000'],
-       opp:'$610 a month. For most incomes on this screen, that is the entire gap between getting ahead and treading water.',
-       eff:{debt:23000,expenses:610,dims:{debt:-24,cashflow:-22,credit:-8,spending:-10}},
-       cf:-7320, alt:'Bought a new car on finance',
-       why:'New cars lose roughly 20% of their value in year one. You are financing that loss at interest. It buys real peace of mind — at a price that outweighs it for most people at this income.'},
-      {n:'Skip it — keep commuting', pic:'bus', price:0, q:3, life:'no ownership',
-       meta:['<em>Monthly</em> $70 transit','<em>Debt added</em> None','<em>Savings after</em> {AFTER}'],
-       opp:'The money stays yours. The cost is time and flexibility.',
-       eff:{expenses:70,dims:{spending:8,debt:4,cashflow:6},xp:{budgeting:2,saving:2}},
-       cf:1200,
-       why:'The cheapest car is frequently the one you do not buy. If transit genuinely works for your commute, the difference compounds for years.'}
-    ]
-  },
-  furnish:{
-    at:6, who:['jordan','priya'], scene:'home', mood:'happy', head:'Your place needs furniture',
-    band:'You are moving in. How much of it needs to be new on day one?',
-    lead:'A bed, somewhere to sit, somewhere to eat. All three options get you a functioning apartment.',
-    items:[
-      {n:'Secondhand everything', pic:'roomA', price:420, q:2, life:'mismatched but works',
-       meta:['<em>Debt added</em> None','<em>Savings after</em> {AFTER}'],
-       opp:'Frees roughly $900 compared to the middle option — which is a month of expenses for most people here.',
-       eff:{savings:-420,dims:{spending:8,saving:4},xp:{budgeting:3,saving:2}},
-       why:'Furniture depreciates the instant it enters your home. Buying used is one of the few places you can cut 70% of a cost with almost no loss in function.'},
-      {n:'Mix of new and used', pic:'roomB', price:1300, q:4, life:'comfortable',
-       meta:['<em>Debt added</em> None','<em>Savings after</em> {AFTER}'],
-       opp:'New where it matters, used where it does not. Costs about three months of typical savings.',
-       eff:{savings:-1300,dims:{spending:2,emergency:-8},xp:{budgeting:2}},
-       why:'Splitting a purchase into "needs to be new" and "does not" is more useful than deciding new-versus-used for the whole category at once.'},
-      {n:'All new, on store credit', pic:'roomC', price:2600, q:5, life:'matching set',
-       meta:['<em>Monthly</em> $118 × 24','<em>Total paid</em> ≈ $2,832','<em>Debt added</em> $2,600'],
-       opp:'Two years of payments for something you will own either way.',
-       eff:{debt:2600,dims:{debt:-12,credit:-6,cashflow:-6}},
-       cf:-1532, alt:'Furnished the apartment on store credit',
-       why:'Store financing is designed around the monthly figure because $118 sounds smaller than $2,832. Both numbers are true; only one is the total.'}
-    ]
-  }
-};
-
-/* A lender checks two things, so this does too: can you cover it now, and does the
-   monthly payment fit what is actually left over after fixed costs each month. */
-function affordCheck(it){
-  const inc = S.thisIncome||S.income;
-  const headroom = inc - fixedExpenses();
-  const upfront = it.eff.savings ? Math.abs(it.eff.savings) : 0;
-  const monthly = it.eff.expenses || 0;
-  const borrowed = it.eff.debt || 0;
-  if(upfront && S.savings < upfront)
-    return `You have ${money(S.savings)} saved. This needs ${money(upfront)} up front.`;
-  if(monthly && monthly > headroom)
-    return `${money(monthly)} a month does not fit. You have ${money(headroom)} left over after fixed costs.`;
-  if(borrowed && borrowed > inc*5)
-    return `A lender would decline this. You would be borrowing ${(borrowed/inc).toFixed(1)}× your monthly income.`;
-  if(monthly && monthly > headroom*0.6)
-    return null; // allowed, but the opportunity-cost line already warns
-  return null;
-}
-
-function showShop(key){
-  const s=SHOPS[key]; S.phase='event'; S.currentShop=key; S.pendingShop=null;
-  $('#sceneArt').innerHTML = scene(s.scene) + `<div class="actor">${avatar(S.char,s.mood,215)}</div>`;
-  $('#sceneBody').innerHTML = `
-    <p class="eyebrow">${MONTHS[S.month]} · A major purchase</p>
-    <h2>${s.head}</h2>
-    <p class="lead">${s.lead}</p>
-    <div class="shelf">${s.items.map((it,i)=>{
-      const after = S.savings - (it.eff.savings?Math.abs(it.eff.savings):0);
-      const block = affordCheck(it);
-      return `<button class="item" ${block?'disabled':''} onclick="buyItem('${key}',${i})">
-        <div class="pic">${PIC[it.pic]}</div>
-        <b>${it.n}</b>
-        <div class="price">${it.price?money(it.price):'No cost'}</div>
-        <div class="qual">${[1,2,3,4,5].map(q=>`<i class="${q<=it.q?'on':''}"></i>`).join('')}</div>
-        <div class="meta">${it.meta.map(m=>m.replace('{AFTER}',money(Math.max(0,after)))).join('<br>')}</div>
-        <div class="opp">${block || it.opp}</div>
-      </button>`}).join('')}</div>`;
-  $('#scene').classList.add('on');
-  window.scrollTo({top:0});
-}
-function buyItem(key,i){
-  const s=SHOPS[key], it=s.items[i];
-  applyEffect(it.eff, s.head, it.n);
-  S.choicesLog.push({m:S.month, event:s.head, choice:it.n, why:it.why, cf:it.cf||0});
-  S.counterfactual += (it.cf||0);
-  if(it.alt) S.altNotes.push({m:S.month, note:it.alt, delta:Math.abs(it.cf||0)});
-  if(it.delayed && Math.random()<it.delayed.p)
-    S.pending.push({at:S.month+it.delayed.in, effect:it.delayed.eff, title:it.delayed.title, note:it.delayed.note});
-  S.timeline.push({m:S.month, t:s.head, d:`Chose: ${it.n}`, big:true});
-  $('#sceneArt').innerHTML = scene(s.scene) + `<div class="actor">${avatar(S.char, it.eff.debt?'nervous':'proud',215)}</div>`;
-  $('#sceneBody').innerHTML = `
-    <p class="eyebrow">You chose</p>
-    <h2 style="font-size:clamp(26px,4vw,42px)">${it.n}</h2>
-    <div class="why" style="margin-top:26px"><span class="eyebrow">Why this mattered</span><p>${it.why}</p></div>
-    <div class="scene-cta"><button class="btn big" onclick="closeScene()">Back to ${S.char.name}'s month →</button></div>`;
-  window.scrollTo({top:0});
-}
-
-function maybeEvent(){
-  if(S.month===0) return;
-  const shopKey = Object.keys(SHOPS).find(k=>SHOPS[k].at===S.month && !S.usedShops.includes(k) && SHOPS[k].who.includes(S.char.id));
-  if(shopKey){ S.usedShops.push(shopKey); S.pendingShop=shopKey; renderAll(); return; }
-  const crash = EVENTS.find(e=>e.at===S.month);
-  if(crash && !S.usedEvents.includes(crash.id) && portValue()>50) return showEvent(crash);
-  const pool = EVENTS.filter(e=>e.minM!==undefined && S.month>=e.minM && S.month<=e.maxM && !S.usedEvents.includes(e.id));
-  if(!pool.length) return;
-  const chance = S.month%2===1 ? .95 : .55;
-  if(Math.random()>chance) return;
-  showEvent(pool[Math.floor(Math.random()*pool.length)]);
-}
-
-function showEvent(ev){
-  S.usedEvents.push(ev.id);
-  S.phase='event';
-  S.currentEvent=ev;
-  $('#sceneArt').innerHTML = scene(ev.scene) + `<div class="actor">${avatar(S.char,ev.mood,220)}</div>`;
-  $('#sceneBody').innerHTML = `
-    <p class="eyebrow">${MONTHS[S.month]} · ${chapterFor(S.month).n}</p>
-    <h2>${ev.head}</h2>
-    <p class="lead">${ev.lead}</p>
-    ${ev.cost?`<div class="cost">${money(ev.cost)}</div>`:''}
-    <div class="choices">
-      ${ev.choices.map((c,i)=>{
-        const cant = c.eff && c.eff.savings && (S.savings + S.cash) < Math.abs(c.eff.savings);
-        return `<button class="choice" ${cant?'disabled':''} onclick="chooseEvent(${i})">
-          <b>${c.b}</b>
-          <div class="now">${c.now}</div>
-          <div class="later">${c.later}</div>
-          ${cant?'<div class="now" style="margin-top:8px;color:#B44A3A">Not enough saved</div>':''}
-        </button>`}).join('')}
-    </div>`;
-  $('#scene').classList.add('on');
-}
-
-function chooseEvent(i){
-  const ev=S.currentEvent, c=ev.choices[i];
-  applyEffect(c.eff, ev.head, c.b);
-  S.choicesLog.push({m:S.month, event:ev.head, choice:c.b, why:c.why, cf:c.cf||0});
-  S.counterfactual += (c.cf||0);
-  if(c.alt) S.altNotes.push({m:S.month, note:c.alt, delta:Math.abs(c.cf||0)});
-  if(ev.id==='crash') S.heldDownturn = (c.eff.hold||c.eff.buy)?true:false;
-  if(ev.id==='crash' && (c.eff.hold||c.eff.buy)) unlock('held');
-  if(c.delayed && Math.random()<c.delayed.p){
-    S.pending.push({at:S.month+c.delayed.in, effect:c.delayed.eff, title:c.delayed.title, note:c.delayed.note});
-  }
-  S.timeline.push({m:S.month, t:ev.head, d:c.b, big:ev.kind==='emergency'});
-  $('#sceneBody').innerHTML = `
-    <p class="eyebrow">You chose</p>
-    <h2 style="font-size:clamp(26px,4vw,42px)">${c.b}</h2>
-    <div class="why" style="margin-top:26px">
-      <span class="eyebrow">Why this mattered</span>
-      <p>${c.why}</p>
-    </div>
-    <div class="scene-cta"><button class="btn big" onclick="closeScene()">Back to ${S.char.name}'s month →</button></div>`;
-  $('#sceneArt').innerHTML = scene(ev.scene) + `<div class="actor">${avatar(S.char, c.eff.savings<0||c.eff.debt>0?'worried':'proud',220)}</div>`;
-  window.scrollTo({top:0});
-}
-
-function applyEffect(eff, title, note){
-  if(!eff) return;
-  if(eff.savings){
-    const from = S.savings;
-    S.savings = Math.max(0, S.savings + eff.savings);
-    const short = eff.savings<0 ? Math.max(0, Math.abs(eff.savings)-from) : 0;
-    if(short>0) S.debt += short;
-    floater((eff.savings>0?'+':'') + money(eff.savings), eff.savings>0?'up':'dn');
-  }
-  if(eff.cash){ S.cash += eff.cash; floater('+'+money(eff.cash),'up'); }
-  if(eff.debt){ S.debt += eff.debt; floater('+'+money(eff.debt)+' debt','dn'); }
-  if(eff.income){ S.income += eff.income; S.char.income += eff.income; }
-  if(eff.expenses){ S.expenses += eff.expenses; }
-  if(eff.sell){ const v=portValue(); S.savings+=v; ASSETS.forEach(a=>S.port[a.k]=0); }
-  if(eff.buy){ const amt=Math.min(eff.buy,S.savings); S.savings-=amt; depositToPortfolio(amt); S.contributed+=amt; }
-  if(eff.ratecut){ S.char.rate = Math.max(0, S.char.rate-0.18); }
-  if(eff.dims) Object.entries(eff.dims).forEach(([k,v])=>{
-    if(k in S.dims) S.dims[k]=clamp(S.dims[k]+v,0,100);
-    else if(k in S.xp) S.xp[k]=Math.max(0,S.xp[k]+v);   // e.g. credit is a skill, not a dimension
-  });
-  if(eff.xp) Object.entries(eff.xp).forEach(([k,v])=> S.xp[k]+=v);
-  if(title && note) toast('📌',title,note);
-  checkAchievements();
-}
-
-function closeScene(){
-  $('#scene').classList.remove('on');
-  S.phase='decide';
-  renderAll();
-}
-
-/* ============================ RENDER ============================ */
-const TABS=['overview','money','spending','investing','goals','journey','skills'];
-function buildNav(){
-  $('#nav').innerHTML = TABS.map(t=>
-    `<button class="${t===S.tab?'on':''}" onclick="setTab('${t}')">${t[0].toUpperCase()+t.slice(1)}</button>`).join('');
-}
-function setTab(t){ S.tab=t; buildNav(); renderView(); }
-
-function renderAll(){
-  const ch=chapterFor(S.month);
-  $('#chNum').textContent=ch.n; $('#chName').textContent=ch.t;
-  $('#months').innerHTML = MONTHS.map((m,i)=>
-    `<div class="mdot ${i<S.month?'done':''} ${i===S.month?'now':''}" title="${m}"></div>`).join('');
-  $('#dashAv').innerHTML = avatar(S.char, mood(), 132);
-  $('#dashName').textContent = `${S.char.name} · ${MONTHS[S.month]}`;
-  $('#dashMood').textContent = moodText();
-  $('#nwVal').textContent = money(netWorth());
-  $('#mIncome').textContent = '+'+money(S.thisIncome||S.income);
-  $('#mExp').textContent = '−'+money(fixedExpenses());
-  const left=(S.thisIncome||S.income)-fixedExpenses();
-  $('#mLeft').textContent = money(left);
-  $('#mLeft').className = 'mono '+(left>=0?'up':'dn');
-  $('#monthHint').textContent = S.char.volatility>.1 ? 'Your income varies month to month.' : 'Steady paycheck this month.';
-  $('#footMonth').textContent = `Month ${S.month+1} of 12 · ${MONTHS[S.month]}`;
-  $('#footNote').textContent = S.month===11 ? 'Last month of the year.' : 'Decide where your money goes.';
-  $('#nextBtn').textContent = S.month===11 ? 'Finish the year →' : 'Next month →';
-  renderView();
-}
-
-function mood(){
-  const d=S.dims;
-  if(S.marketDelta<-60) return 'nervous';
-  if(S.goals.some(g=>g.done) && d.saving>60) return 'excited';
-  if(S.debt>S.char.debt) return 'worried';
-  if(d.emergency>60 && d.cashflow>60) return 'proud';
-  if(d.cashflow<35) return 'worried';
-  if(d.saving>55) return 'happy';
-  return 'neutral';
-}
-function moodText(){
-  return {
-    excited:'Feeling like this is working.', happy:'Quietly pleased.', proud:'Steady and prepared.',
-    worried:'A little tense about money.', nervous:'Watching the market and not loving it.',
-    neutral:'Getting through the month.', sad:'Having a rough stretch.'
-  }[mood()];
-}
-
-function renderView(){
-  const v=$('#view');
-  if(S.tab==='overview') v.innerHTML = viewOverview();
-  if(S.tab==='money')    v.innerHTML = viewMoney();
-  if(S.tab==='spending') v.innerHTML = viewSpending();
-  if(S.tab==='investing')v.innerHTML = viewInvesting();
-  if(S.tab==='goals')    v.innerHTML = viewGoals();
-  if(S.tab==='journey')  v.innerHTML = viewJourney();
-  if(S.tab==='skills')   v.innerHTML = viewSkills();
-  if(S.tab==='money') bindSliders();
-  if(S.tab==='investing') bindMix();
-  runCounters(v);
-}
-
-/* ---------- dynamic emphasis: the dashboard leans toward what matters now (§6) ---------- */
-function bands(){
-  const out=[];
-  if(S.pendingShop){
-    const s=SHOPS[S.pendingShop];
-    out.push(`<div class="band shop"><span class="bic">🛒</span><div><b>${s.head}</b><p>${s.band}</p></div>
-      <button class="btn" onclick="showShop('${S.pendingShop}')">Go shopping →</button></div>`);
-  }
-  if(S.marketDelta && Math.abs(S.marketDelta)>25){
-    const up=S.marketDelta>0;
-    out.push(`<div class="band market"><span class="bic">${up?'📈':'📉'}</span><div>
-      <b>Market moved ${up?'up':'down'} ${money(Math.abs(S.marketDelta))} this month</b>
-      <p>${up?'Your holdings gained value without you doing anything. That is the point of staying invested.':'Paper losses only. Nothing is realised until you sell.'}</p></div>
-      <button class="btn" onclick="setTab('investing')">See portfolio →</button></div>`);
-  }
-  if(S.debt>0.5 && S.monthInterest>12){
-    out.push(`<div class="band alert"><span class="bic">⚠️</span><div>
-      <b>${money(S.monthInterest)} of interest was added to your debt</b>
-      <p>That happens every month the balance sits there. Paying extra now reduces every future charge.</p></div>
-      <button class="btn" onclick="setTab('money')">Pay it down →</button></div>`);
-  }
-  if(S.justMilestone){
-    out.push(`<div class="band win"><span class="bic">🎉</span><div><b>${S.justMilestone.t}</b><p>${S.justMilestone.d}</p></div></div>`);
-  }
-  if(S.savings < fixedExpenses()*0.5 && S.month>1 && !S.pendingShop){
-    out.push(`<div class="band alert"><span class="bic">🪫</span><div>
-      <b>Your cushion is below half a month of expenses</b>
-      <p>At this level, any surprise becomes debt. Building back to one month changes what the next emergency costs you.</p></div>
-      <button class="btn" onclick="setTab('money')">Assign savings →</button></div>`);
-  }
-  return out.join('');
-}
-
-function tiles(){
-  const pv=portValue();
-  const unassigned = S.cash - (S.alloc.save+S.alloc.debtPay+S.alloc.invest+S.alloc.spend);
-  return `<div class="tiles">
-    <div class="tile hero"><span>AVAILABLE TO ASSIGN</span>${ctr('avail',unassigned)}<small>Left over after fixed expenses</small></div>
-    <div class="tile"><span>SAVINGS</span>${ctr('sav',S.savings)}
-      <div class="bar" style="margin-top:9px"><i style="width:${clamp(S.savings/Math.max(1,fixedExpenses()*3)*100,0,100)}%"></i></div>
-      <small>${(S.savings/Math.max(1,fixedExpenses())).toFixed(1)} months of expenses covered</small></div>
-    <div class="tile"><span>DEBT</span><b class="mono" data-ctr data-from="${PREV.debt===undefined?S.debt:PREV.debt}" data-to="${S.debt}" data-fmt="money" style="color:${S.debt>0.5?'var(--loss)':'var(--gain)'}">${money(S.debt)}</b>${(PREV.debt=S.debt)?'':''}
-      <small>${S.debt>0.5?S.char.debtLabel:'Nothing owed'}</small></div>
-    <div class="tile"><span>INVESTMENTS</span>${ctr('inv',pv)}<small>${S.contributed?`${money(S.contributed)} contributed`:'Not started'}</small></div>
-    <div class="tile"><span>MONTHLY CASH FLOW</span><b class="mono" style="color:${((S.thisIncome||S.income)-S.expenses)>=0?'var(--gain)':'var(--loss)'}">${money((S.thisIncome||S.income)-S.expenses)}</b><small>Income minus fixed costs</small></div>
-    <div class="tile"><span>NET WORTH</span>${ctr('nwTile',netWorth())}<small>Savings + investments − debt</small></div>
-  </div>`;
-}
-
-function viewOverview(){
-  const dims = Object.entries(S.dims).map(([k,v])=>`
-    <div class="dim">
-      <div class="top"><b>${DIM_INFO[k].label}</b><i>${Math.round(v)}</i></div>
-      <div class="bar"><i style="width:${v}%"></i></div>
-      <p>${DIM_INFO[k].why}</p>
-    </div>`).join('');
-  const goals = S.goals.length ? S.goals.map(g=>goalCard(g)).join('') :
-    `<p style="font-size:13.5px;color:#8a6b71">No goals set. Everything you save builds general savings.</p>`;
-  return bands() + tiles() + `
-    <div class="panel"><h4>Financial dimensions</h4>
-      <p class="hint">Six measures instead of one score. They move every month based on what you actually do.</p>
-      <div class="dims">${dims}</div></div>
-    <div class="panel"><h4>Active goals</h4><p class="hint">Money you save is split across unfinished goals.</p>
-      <div class="gl">${goals}</div></div>`;
-}
-
-function goalCard(g){
-  const pct = clamp(g.saved/g.target*100,0,100);
-  return `<div class="gcard ${g.done?'done':''}">
-    <div class="gt"><b>${g.name}</b><i>${money(g.saved)} / ${money(g.target)}</i></div>
-    <div class="bar"><i style="width:${pct}%"></i></div></div>`;
-}
-
-function viewMoney(){
-  const assigned = S.alloc.save+S.alloc.debtPay+S.alloc.invest+S.alloc.spend;
-  const left = S.cash - assigned;
-  return tiles() + `
-  <div class="panel"><h4>Assign this month's money</h4>
-    <p class="hint">Everything you do not assign rolls into savings automatically.</p>
-    <div class="pool"><span>Unassigned</span><b class="mono" id="poolLeft">${money(left)}</b></div>
-    <div class="alloc">
-      ${slot('save','Save it','Builds your cushion and feeds your goals')}
-      ${S.debt>0.5 ? slot('debtPay','Pay down debt',`${S.char.debtLabel} · ${money(S.monthInterest||0)} interest charged this month`) : ''}
-      ${slot('invest','Invest it','Buys into your portfolio at this month\'s prices')}
-      ${slot('spend','Spend it','Discretionary. Not automatically bad — but it is tracked')}
-    </div>
-  </div>`;
-}
-function slot(k,label,sub){
-  const max = S.cash;
-  return `<div class="slot">
-    <div class="lab">${label}<em>${sub}</em></div>
-    <div class="amt" id="amt-${k}">${money(S.alloc[k])}</div>
-    <input type="range" min="0" max="${Math.round(max)}" step="10" value="${S.alloc[k]}" data-k="${k}" aria-label="${label}">
-  </div>`;
-}
-function bindSliders(){
-  document.querySelectorAll('#view input[type=range]').forEach(r=>{
-    r.addEventListener('input',()=>{
-      const k=r.dataset.k;
-      const others = Object.entries(S.alloc).filter(([kk])=>kk!==k).reduce((s,[,v])=>s+v,0);
-      let v = parseFloat(r.value);
-      if(others+v > S.cash){ v = Math.max(0,S.cash-others); r.value=v; }
-      S.alloc[k]=v;
-      $('#amt-'+k).textContent=money(v);
-      const left = S.cash - (S.alloc.save+S.alloc.debtPay+S.alloc.invest+S.alloc.spend);
-      $('#poolLeft').textContent = money(left);
-    });
-  });
-}
-
-function viewSpending(){
-  const inc=S.thisIncome||S.income;
-  const rows=[
-    ['Housing & utilities',Math.round(S.expenses*.46)],
-    ['Food & groceries',Math.round(S.expenses*.22)],
-    ['Transport',Math.round(S.expenses*.16)],
-    ['Phone & subscriptions',Math.round(S.expenses*.08)],
-    ['Everything else',Math.round(S.expenses*.08)]
-  ];
-  return tiles()+`
-  <div class="panel"><h4>Where your fixed money goes</h4>
-    <p class="hint">These come out before you decide anything. ${money(S.expenses)} of ${money(inc)} — that is ${Math.round(S.expenses/inc*100)}% of this month's income.</p>
-    ${rows.map(([n,a])=>`
-      <div style="margin-bottom:14px">
-        <div class="top" style="display:flex;justify-content:space-between;margin-bottom:6px">
-          <span style="font-size:13.5px;color:#5c4148">${n}</span>
-          <b class="mono" style="font-size:13px;color:var(--burgundy-dark)">${money(a)}</b></div>
-        <div class="bar"><i style="width:${a/S.expenses*100}%"></i></div></div>`).join('')}
-  </div>
-  <div class="panel"><h4>Discretionary spending this year</h4>
-    <p class="hint">Money you chose to spend rather than save, invest, or repay.</p>
-    <b class="mono" style="font-size:34px;color:var(--burgundy)">${money(S.history.reduce((s,h)=>s+h.spend,0))}</b>
-    <p style="font-size:13px;color:#8a6b71;margin-top:10px;line-height:1.6">Spending is not a failure condition. The dimension tracks proportion, not amount — spending 10% of a large income scores better than 30% of a small one.</p>
-  </div>`;
-}
-
-function viewInvesting(){
-  const pv=portValue(); const mix=S.mix||{cash:.1,bonds:.2,index:.55,stocks:.15};
-  const gain = pv - S.contributed;
-  const pts = S.nwSeries.length>1 ? S.nwSeries : [netWorth()];
-  return `
-  <div class="panel" style="margin-top:0"><h4>Your portfolio</h4>
-    <p class="hint">Simulated market. Every return below is predetermined for this simulation.</p>
-    <div class="tiles" style="grid-template-columns:repeat(3,1fr)">
-      <div class="tile"><span>PORTFOLIO VALUE</span><b>${money(pv)}</b></div>
-      <div class="tile"><span>YOU PUT IN</span><b>${money(S.contributed)}</b></div>
-      <div class="tile"><span>GAIN / LOSS</span><b style="color:${gain>=0?'var(--gain)':'var(--loss)'}">${gain>=0?'+':''}${money(gain)}</b></div>
-    </div>
-    <div class="alloc-viz">${ASSETS.map(a=>`<i style="width:${(mix[a.k]*100)}%;background:${a.color}"></i>`).join('')}</div>
-    <div class="legend">${ASSETS.map(a=>`<span><em style="background:${a.color}"></em>${a.label} · ${Math.round(mix[a.k]*100)}% · ${a.risk} risk</span>`).join('')}</div>
-    <div class="alloc">
-      ${ASSETS.map(a=>`<div class="slot">
-        <div class="lab">${a.label}<em>Holding ${money(S.port[a.k])} · ${a.risk} risk · ${(MARKET[a.k][S.month]>=0?'+':'')}${MARKET[a.k][S.month]}% this month</em></div>
-        <div class="amt" id="mix-${a.k}">${Math.round(mix[a.k]*100)}%</div>
-        <input type="range" min="0" max="100" step="5" value="${Math.round(mix[a.k]*100)}" data-a="${a.k}" aria-label="${a.label} allocation">
-      </div>`).join('')}
-    </div>
-    <p class="disc"><strong>Educational simulation.</strong> These returns are fixed sample data chosen to illustrate how volatility and time interact. They are not forecasts, not advice, and not representative of any real investment. Real markets can and do fall further and for longer than anything shown here.</p>
-  </div>
-  <div class="panel"><h4>Historical performance</h4>
-    <p class="hint">Your portfolio value against what you actually put in. The gap between the two lines is the market doing the work — in either direction.</p>
-    ${multiLine()}
-    <div class="legend" style="margin-top:14px">
-      <span><em style="background:#6B1F2B"></em>Portfolio value</span>
-      <span><em style="background:#A66A6A"></em>Total contributed</span>
-      <span><em style="background:#C9A227"></em>Net worth</span>
-    </div>
-  </div>
-  <div class="panel"><h4>Market history in this simulation</h4>
-    <p class="hint">Fixed sample returns, month by month. Month 6 contains a deliberate downturn.</p>
-    ${marketTable()}
-  </div>`;
-}
-function multiLine(){
-  const n=S.portHistory.length;
-  if(n<2) return `<p style="font-size:13px;color:#8a6b71">Two months of history are needed before this chart has anything to show.</p>`;
-  const contrib=[]; let run=0;
-  S.history.forEach(h=>{ run+=h.inv; contrib.push(run); });
-  const series=[[S.portHistory,'#6B1F2B',3],[contrib,'#A66A6A',2],[S.nwSeries,'#C9A227',2]];
-  const all=series.flatMap(s=>s[0]);
-  const min=Math.min(...all,0), max=Math.max(...all,1), w=600,h=150;
-  const path=arr=>arr.map((p,i)=>`${(i/Math.max(1,arr.length-1))*w},${h-((p-min)/(max-min||1))*(h-18)-9}`).join(' ');
-  return `<svg class="spark" style="height:150px" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Portfolio history">
-    <line x1="0" y1="${h-((0-min)/(max-min||1))*(h-18)-9}" x2="${w}" y2="${h-((0-min)/(max-min||1))*(h-18)-9}" stroke="#6B1F2B" stroke-width="1" opacity=".18" stroke-dasharray="4 4"/>
-    ${series.map(([arr,c,sw])=>`<polyline points="${path(arr)}" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linejoin="round" stroke-linecap="round"/>`).join('')}
-  </svg>`;
-}
-function marketTable(){
-  return `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11.5px">
-    <tr><td style="padding:6px 8px;color:var(--rose)">Month</td>${MONTHS.map((m,i)=>
-      `<td style="padding:6px 8px;text-align:right;color:${i===S.month?'var(--burgundy)':'var(--rose)'};font-weight:${i===S.month?700:400}">${m.slice(0,3)}</td>`).join('')}</tr>
-    ${ASSETS.map(a=>`<tr style="border-top:1px solid var(--line)">
-      <td style="padding:7px 8px;color:${a.color};font-weight:700">${a.label}</td>
-      ${MARKET[a.k].map((r,i)=>`<td style="padding:7px 8px;text-align:right;color:${r>=0?'var(--gain)':'var(--loss)'};opacity:${i>S.month?.25:1}">${r>0?'+':''}${r}</td>`).join('')}
-    </tr>`).join('')}
-  </table></div>`;
-}
-function sparkline(pts){
-  if(pts.length<2) return `<p style="font-size:13px;color:#8a6b71">Your first data point lands after month one.</p>`;
-  const w=600,h=120,min=Math.min(...pts,0),max=Math.max(...pts,1);
-  const d = pts.map((p,i)=>`${(i/(pts.length-1))*w},${h-((p-min)/(max-min||1))*(h-14)-7}`).join(' ');
-  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
-    <polyline points="${d}" fill="none" stroke="#6B1F2B" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
-    <polyline points="0,${h} ${d} ${w},${h}" fill="#6B1F2B" opacity=".08"/></svg>`;
-}
-function bindMix(){
-  document.querySelectorAll('#view input[data-a]').forEach(r=>{
-    r.addEventListener('input',()=>{
-      const mix=S.mix||{cash:.1,bonds:.2,index:.55,stocks:.15};
-      mix[r.dataset.a]=parseFloat(r.value)/100;
-      const total=Object.values(mix).reduce((a,b)=>a+b,0)||1;
-      Object.keys(mix).forEach(k=>mix[k]=mix[k]/total);
-      S.mix=mix; renderView();
-    });
-  });
-}
-
-function viewGoals(){
-  return `<div class="panel" style="margin-top:0"><h4>Your goals</h4>
-    <p class="hint">You wrote these. Savings you assign each month split evenly across the unfinished ones.</p>
-    <div class="gl">${S.goals.length?S.goals.map(goalCard).join(''):'<p style="font-size:13.5px;color:#8a6b71">You started without goals. Savings still accumulate.</p>'}</div>
-  </div>
-  <div class="panel"><h4>Achievements</h4><p class="hint">Unlocked as you play. Nothing here is decorative — each one marks a real financial milestone.</p>
-    <div class="ach">${ACHIEVEMENTS.map(a=>`
-      <div class="trophy ${S.achievements.includes(a.id)?'on':''}">
-        <span style="font-size:22px">${a.ic}</span><b>${a.t}</b><p>${a.d}</p></div>`).join('')}</div>
-  </div>`;
-}
-
-function viewJourney(){
-  const evs = [...S.timeline].reverse();
-  return `<div class="panel" style="margin-top:0"><h4>Your journey</h4>
-    <p class="hint">Everything that happened, newest first.</p>
-    ${sparkline(S.nwSeries.length>1?S.nwSeries:[netWorth()])}
-    <div class="tl" style="margin-top:24px">
-      ${evs.map(e=>`<div class="tev ${e.big?'big':''} ${e.win?'win':''}">
-        <div class="m">${MONTHS[e.m]}</div>
-        <div class="t">${e.t}</div>
-        <div class="d">${e.d||''}</div>
-        ${e.v?`<div class="v ${e.v>0?'up':'dn'}">${e.v>0?'+':''}${money(e.v)}</div>`:''}
-      </div>`).join('')}
-    </div></div>`;
-}
-
-function viewSkills(){
-  return `<div class="panel" style="margin-top:0"><h4>Skills</h4>
-    <p class="hint">Levels come from decisions, not from clicking. Four levels each.</p>
-    <div class="skills">${Object.entries(SKILL_INFO).map(([k,info])=>{
-      const lv = clamp(Math.floor(S.xp[k]/6),0,3);
-      return `<div class="skill">
-        <h5>${info.label}</h5>
-        <p class="lv">Level ${lv+1} — ${info.levels[lv]}</p>
-        <div class="pips">${[0,1,2,3].map(i=>`<i class="${i<=lv?'on':''}"></i>`).join('')}</div>
-        <p>${skillHint(k,lv)}</p></div>`;
-    }).join('')}</div></div>`;
-}
-function skillHint(k,lv){
-  if(lv>=3) return 'Maxed. You have consistently made strong decisions here.';
-  return {
-    saving:'Rises when you assign money to savings each month.',
-    budgeting:'Rises when you keep discretionary spending in proportion.',
-    credit:'Rises when you pay down balances and manage credit offers well.',
-    investing:'Rises with consistent contributions, not big one-off bets.',
-    risk:'Rises when you handle uncertainty deliberately rather than reactively.',
-    emergency:'Rises when you absorb surprises without borrowing.'
-  }[k];
-}
-
-/* ============================ ENDING ============================ */
-function finish(){
-  const c=S.char;
-  const dimsSorted = Object.entries(S.dims).sort((a,b)=>b[1]-a[1]);
-  const best=dimsSorted[0], worst=dimsSorted[dimsSorted.length-1];
-  const pv=portValue(), gain=pv-S.contributed;
-  const emergencies = S.timeline.filter(t=>t.big).length;
-  const goalsDone = S.goals.filter(g=>g.done).length;
-  const biggest = S.choicesLog.length ? S.choicesLog.reduce((a,b)=>Math.abs(b.cf)>Math.abs(a.cf)?b:a) : null;
-  const altSavings = S.savings + Math.max(0, S.counterfactual*0.45);
-  const better = altSavings > S.savings + 40;
-
-  $('#endBody').innerHTML = `
-  <div class="end-art">${scene('sunrise')}<div class="actor">${avatar(c, netWorth()>c.savings-c.debt?'proud':'neutral',230)}</div></div>
-  <div class="end-wrap">
-    <p class="eyebrow" style="text-align:center">Twelve months later</p>
-    <h2>Your financial year</h2>
-    <div class="ledger">
-      <div class="led"><span>Savings</span><div class="from">from ${money(c.savings)}</div><b>${money(S.savings)}</b></div>
-      <div class="led"><span>Debt</span><div class="from">from ${money(c.debt)}</div><b style="color:${S.debt<c.debt?'#8ec49b':'#e08a7a'}">${S.debt>0.5?money(S.debt):'$0'}</b></div>
-      <div class="led"><span>Investments</span><div class="from">you put in ${money(S.contributed)}</div><b>${money(pv)}</b></div>
-      <div class="led"><span>Market gain/loss</span><div class="from">on contributions</div><b style="color:${gain>=0?'#8ec49b':'#e08a7a'}">${gain>=0?'+':''}${money(gain)}</b></div>
-      <div class="led"><span>Net worth</span><div class="from">from ${money(c.savings-c.debt)}</div><b>${money(netWorth())}</b></div>
-      <div class="led"><span>Goals completed</span><div class="from">of ${S.goals.length||0} set</div><b>${goalsDone}</b></div>
-      <div class="led"><span>Major events</span><div class="from">handled this year</div><b>${emergencies}</b></div>
-      <div class="led"><span>Achievements</span><div class="from">of ${ACHIEVEMENTS.length}</div><b>${S.achievements.length}</b></div>
-    </div>
-
-    <div class="end-sec">
-      <p class="eyebrow">What you learned</p>
-      <h2 style="font-size:clamp(26px,4vw,42px)">Your habits, in three numbers</h2>
-      <div class="learn">
-        <div class="lcard"><span class="eyebrow">Your strongest area</span><b>${DIM_INFO[best[0]].label}</b>
-          <p>Scored ${Math.round(best[1])} of 100. ${DIM_INFO[best[0]].why} You did this consistently.</p></div>
-        <div class="lcard"><span class="eyebrow">Your biggest challenge</span><b>${DIM_INFO[worst[0]].label}</b>
-          <p>Scored ${Math.round(worst[1])} of 100. This is the area where small changes would have moved your year the most.</p></div>
-        <div class="lcard"><span class="eyebrow">Your biggest decision</span><b style="font-size:18px;line-height:1.3">${biggest?biggest.choice:'Starting with a plan'}</b>
-          <p>${biggest?`In ${MONTHS[biggest.m]}, facing "${biggest.event}". ${biggest.why}`:'You set goals before the first month began, which shaped every allocation after it.'}</p></div>
+      <div class="grid grid-3 feature-grid">
+        <div class="card reveal reveal-delay-1">
+          <div class="feature-head">
+            <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20V10M18 20V4M6 20v-6"/></svg></div>
+            <span class="feature-num">01</span>
+          </div>
+          <h4>Practical over theoretical</h4>
+          <p style="margin:0;">Every program is built around real decisions students will actually face.</p>
+        </div>
+        <div class="card reveal reveal-delay-2">
+          <div class="feature-head">
+            <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg></div>
+            <span class="feature-num">02</span>
+          </div>
+          <h4>Research informed</h4>
+          <p style="margin:0;">We study how teens actually learn about money and online safety, and let that shape our programs.</p>
+        </div>
+        <div class="card reveal reveal-delay-3">
+          <div class="feature-head">
+            <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/></svg></div>
+            <span class="feature-num">03</span>
+          </div>
+          <h4>Free and accessible</h4>
+          <p style="margin:0;">Every simulation, workshop, and resource we build is free to access.</p>
+        </div>
       </div>
     </div>
+  </section>
 
-    <div class="end-sec">
-      <p class="eyebrow">Alternate future</p>
-      <h2 style="font-size:clamp(26px,4vw,42px)">What could have happened</h2>
-      <div class="fork">
-        <div class="path real"><span class="eyebrow">Your path</span>
-          <b>${money(S.savings)}</b><div class="cap">ending savings · ${money(netWorth())} net worth</div>
-          <ul>${S.choicesLog.slice(0,3).map(c=>`<li>${MONTHS[c.m]}: ${c.choice}</li>`).join('')||'<li>A quiet, steady year.</li>'}</ul></div>
-        <div class="vs">VERSUS</div>
-        <div class="path"><span class="eyebrow">A simulated alternative</span>
-          <b>${money(altSavings)}</b><div class="cap">if a few decisions had gone differently</div>
-          <ul>${S.altNotes.length?S.altNotes.map(a=>`<li>${MONTHS[a.m]}: ${a.note} — about ${money(a.delta)} in difference</li>`).join(''):'<li>Your choices tracked close to the low-cost path. There is not much left on the table.</li>'}</ul></div>
+  <!-- BIG STATEMENT (pinned scroll moment) -->
+  <section class="pin-section statement-pin" aria-label="Learn, practice, protect" data-state="learn">
+    <div class="pin-sticky">
+      <div class="blob-layer" aria-hidden="true">
+        <div class="blob blob-statement-1 blob-bg" data-speed="0.05"><div class="blob-inner blob-drift-c"><svg viewBox="0 0 600 600"><path fill="currentColor" d="M320,80 C440,100 520,200 520,320 C520,440 420,540 300,540 C180,540 70,450 70,320 C70,190 180,90 300,80 C306,79 314,79 320,80 Z"><animate attributeName="d" dur="12s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M320,80 C440,100 520,200 520,320 C520,440 420,540 300,540 C180,540 70,450 70,320 C70,190 180,90 300,80 C306,79 314,79 320,80 Z;M290,60 C420,70 500,160 500,290 C500,420 400,530 280,520 C160,510 60,410 70,280 C80,150 170,60 290,60 Z;M320,80 C440,100 520,200 520,320 C520,440 420,540 300,540 C180,540 70,450 70,320 C70,190 180,90 300,80 C306,79 314,79 320,80 Z"/></path></svg></div></div>
+        <div class="blob blob-statement-2 blob-mid" data-speed="0.09"><div class="blob-inner blob-drift-a"><svg viewBox="0 0 600 600"><path fill="currentColor" d="M300,60 C420,60 540,150 560,280 C580,410 480,540 340,560 C200,580 80,480 60,340 C40,200 140,80 280,60 C286,59 294,60 300,60 Z"><animate attributeName="d" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M300,60 C420,60 540,150 560,280 C580,410 480,540 340,560 C200,580 80,480 60,340 C40,200 140,80 280,60 C286,59 294,60 300,60 Z;M330,90 C450,110 540,210 530,330 C520,450 420,540 300,530 C180,520 70,420 80,300 C90,180 200,80 320,90 Z;M300,60 C420,60 540,150 560,280 C580,410 480,540 340,560 C200,580 80,480 60,340 C40,200 140,80 280,60 C286,59 294,60 300,60 Z"/></path></svg></div></div>
+        <div class="blob blob-statement-3 blob-fg" data-speed="0.15"><div class="blob-inner blob-drift-e"><svg viewBox="0 0 300 300"><path fill="currentColor" d="M150,40 C210,40 260,90 260,150 C260,210 210,260 150,260 C90,260 40,210 40,150 C40,90 100,40 150,40 Z"><animate attributeName="d" dur="7s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M150,40 C210,40 260,90 260,150 C260,210 210,260 150,260 C90,260 40,210 40,150 C40,90 100,40 150,40 Z;M170,60 C220,70 250,120 240,180 C230,240 170,270 120,250 C70,230 40,170 60,120 C80,70 130,55 170,60 Z;M150,40 C210,40 260,90 260,150 C260,210 210,260 150,260 C90,260 40,210 40,150 C40,90 100,40 150,40 Z"/></path></svg></div></div>
       </div>
-      <p class="disc" style="background:rgba(244,235,221,.07);color:rgba(244,235,221,.62);margin-top:22px">
-        ${better?'The alternate figure is a simulated scenario, not a prediction and not a verdict. It assumes the same events, the same market, and different responses — real life supplies none of those guarantees.':'Both figures come from the same simulated market and the same events. Neither is a forecast.'}
-      </p>
-    </div>
 
-    <div class="end-cta">
-      <button class="btn big" onclick="location.reload()">Play another life →</button>
-    </div>
-  </div>`;
-  go('end');
-}
+      <!-- ambient state visual: builds up as LEARN -> PRACTICE -> PROTECT -->
+      <div class="statement-visual" aria-hidden="true">
+        <svg class="statement-rotating-text" viewBox="0 0 240 240">
+          <defs><path id="statementRingPath" d="M120,120 m-98,0 a98,98 0 1,1 196,0 a98,98 0 1,1 -196,0"/></defs>
+          <text font-size="9.5" letter-spacing="3.2" fill="currentColor">
+            <textPath href="#statementRingPath" startOffset="0%">LEARN &#8226; PRACTICE &#8226; PROTECT &#8226; LEARN &#8226; PRACTICE &#8226; PROTECT &#8226;</textPath>
+          </text>
+        </svg>
+        <div class="statement-ring ring-1"></div>
+        <div class="statement-ring ring-2"></div>
+        <div class="statement-dot"></div>
+        <div class="statement-dot"></div>
+        <div class="statement-dot"></div>
+        <div class="statement-dot"></div>
+        <div class="statement-shield">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+        </div>
+      </div>
 
-/* keyboard: escape closes scene copy */
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape' && $('#scene').classList.contains('on') && S.phase==='decide') closeScene();
-});
-</script>
+      <span class="eyebrow statement-eyebrow">What Finance Forward Network builds</span>
+      <h2 class="statement-word" data-word="1">Learn<span>.</span></h2>
+      <h2 class="statement-word" data-word="2">Practice<span>.</span></h2>
+      <h2 class="statement-word" data-word="3">Protect<span>.</span></h2>
+      <div class="section-divider" aria-hidden="true">
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none"><path fill="var(--bg-alt)" d="M0,40 C240,90 360,0 600,20 C840,40 960,80 1200,50 C1320,35 1380,45 1440,40 L1440,80 L0,80 Z"/></svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESEARCH — pinned scroll-build diagram, then resolves into the research grid below -->
+  <section class="pin-section research-pin" id="research" aria-label="Research, built as you scroll">
+    <div class="pin-sticky">
+      <div class="blob-layer" aria-hidden="true">
+        <div class="blob blob-research-2 blob-mid" data-speed="0.08"><div class="blob-inner blob-drift-b"><svg viewBox="0 0 600 600"><path fill="currentColor" d="M300,60 C420,60 540,150 560,280 C580,410 480,540 340,560 C200,580 80,480 60,340 C40,200 140,80 280,60 C286,59 294,60 300,60 Z"><animate attributeName="d" dur="11s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M300,60 C420,60 540,150 560,280 C580,410 480,540 340,560 C200,580 80,480 60,340 C40,200 140,80 280,60 C286,59 294,60 300,60 Z;M270,80 C390,60 500,140 520,270 C540,400 450,520 320,530 C190,540 70,450 70,320 C70,190 160,90 270,80 Z;M300,60 C420,60 540,150 560,280 C580,410 480,540 340,560 C200,580 80,480 60,340 C40,200 140,80 280,60 C286,59 294,60 300,60 Z"/></path></svg></div></div>
+        <div class="blob blob-research-3 blob-fg" data-speed="0.14"><div class="blob-inner blob-drift-d"><svg viewBox="0 0 300 300"><path fill="currentColor" d="M60,150 C60,90 110,40 170,50 C230,60 260,120 240,180 C220,240 150,270 100,240 C60,216 60,210 60,150 Z"><animate attributeName="d" dur="9s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M60,150 C60,90 110,40 170,50 C230,60 260,120 240,180 C220,240 150,270 100,240 C60,216 60,210 60,150 Z;M80,130 C90,70 160,40 210,70 C260,100 270,160 240,210 C210,260 130,270 90,230 C50,190 70,190 80,130 Z;M60,150 C60,90 110,40 170,50 C230,60 260,120 240,180 C220,240 150,270 100,240 C60,216 60,210 60,150 Z"/></path></svg></div></div>
+      </div>
+      <div class="container research-build">
+        <span class="eyebrow">Research</span>
+        <h2>Studying how students actually learn about money and safety.</h2>
+        <svg class="research-diagram" viewBox="0 0 760 240" aria-hidden="true">
+          <path class="rd-line" data-phase="1" pathLength="100" d="M90,150 C160,150 190,90 260,90"></path>
+          <path class="rd-line" data-phase="2.4" pathLength="100" d="M300,90 C370,90 400,150 470,150"></path>
+          <path class="rd-line" data-phase="3.8" pathLength="100" d="M510,150 C580,150 610,90 680,90"></path>
+          <circle class="rd-pulse" data-phase="1" cx="90" cy="150" r="16"></circle>
+          <circle class="rd-node" data-phase="1" cx="90" cy="150" r="9"></circle>
+          <text class="rd-label" data-phase="1" x="90" y="185" text-anchor="middle">Survey</text>
+          <circle class="rd-pulse" data-phase="2.4" cx="280" cy="90" r="16"></circle>
+          <circle class="rd-node" data-phase="2.4" cx="280" cy="90" r="9"></circle>
+          <text class="rd-label" data-phase="2.4" x="280" y="60" text-anchor="middle">Responses</text>
+          <circle class="rd-pulse" data-phase="3.8" cx="490" cy="150" r="16"></circle>
+          <circle class="rd-node" data-phase="3.8" cx="490" cy="150" r="9"></circle>
+          <text class="rd-label" data-phase="3.8" x="490" y="185" text-anchor="middle">Patterns</text>
+          <circle class="rd-pulse" data-phase="5" cx="680" cy="90" r="16"></circle>
+          <circle class="rd-node" data-phase="5" cx="680" cy="90" r="9"></circle>
+          <text class="rd-label" data-phase="5" x="680" y="60" text-anchor="middle">Findings</text>
+        </svg>
+        <p>Our research shapes everything else we build. We run our own studies to understand what students know, what they don't, and where the gaps really are.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-tight section-alt">
+    <div class="blob-layer" aria-hidden="true">
+      <div class="blob blob-research-1 blob-bg" data-speed="0.06"><div class="blob-inner blob-drift-a"><svg viewBox="0 0 600 600"><path fill="currentColor" d="M280,90 C400,70 520,140 550,260 C580,380 500,500 370,540 C240,580 100,520 70,400 C40,280 120,150 240,100 C253,95 267,92 280,90 Z"><animate attributeName="d" dur="14s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M280,90 C400,70 520,140 550,260 C580,380 500,500 370,540 C240,580 100,520 70,400 C40,280 120,150 240,100 C253,95 267,92 280,90 Z;M250,110 C370,90 490,160 510,280 C530,400 440,510 320,540 C200,570 70,500 60,380 C50,260 130,130 250,110 Z;M280,90 C400,70 520,140 550,260 C580,380 500,500 370,540 C240,580 100,520 70,400 C40,280 120,150 240,100 C253,95 267,92 280,90 Z"/></path></svg></div></div>
+    </div>
+    <div class="container">
+      <div class="grid grid-2">
+        <div class="card reveal reveal-delay-1">
+          <span class="status status-progress">In progress</span>
+          <h3>Financial Literacy and Scam Awareness Study</h3>
+          <div class="tag-row">
+            <span class="tag">Budgeting</span><span class="tag">Credit</span><span class="tag">Online Safety</span>
+          </div>
+          <p>A student led research project studying how teens learn about budgeting, credit, and online safety. All responses are anonymous and used only for educational and research purposes.</p>
+          <a class="card-link" href="https://forms.gle/HcCfE6gbRhLTy4Ly8" target="_blank" rel="noopener">
+            Take the survey
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H8M17 7V16"/></svg>
+          </a>
+        </div>
+        <div class="card card-muted reveal reveal-delay-2">
+          <span class="status status-soon">Coming soon</span>
+          <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M4 10h16M10 20V10"/></svg></div>
+          <h3>Future research projects</h3>
+          <p style="margin:0;">We're continuing to expand our research into financial literacy and cybersecurity education. Future studies and findings will be added here as they launch.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDUCATION -->
+  <section class="section section-tight" id="education">
+    <div class="blob-layer" aria-hidden="true">
+      <div class="blob blob-education-1 blob-bg" data-speed="0.06"><div class="blob-inner blob-drift-b"><svg viewBox="0 0 600 600"><path fill="currentColor" d="M300,60 C420,60 540,150 560,280 C580,410 480,540 340,560 C200,580 80,480 60,340 C40,200 140,80 280,60 C286,59 294,60 300,60 Z"><animate attributeName="d" dur="15s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M300,60 C420,60 540,150 560,280 C580,410 480,540 340,560 C200,580 80,480 60,340 C40,200 140,80 280,60 C286,59 294,60 300,60 Z;M260,80 C380,60 500,140 530,270 C560,400 460,520 330,540 C200,560 70,480 60,350 C50,220 140,100 260,80 Z;M300,60 C420,60 540,150 560,280 C580,410 480,540 340,560 C200,580 80,480 60,340 C40,200 140,80 280,60 C286,59 294,60 300,60 Z"/></path></svg></div></div>
+      <div class="blob blob-education-2 blob-fg" data-speed="0.17"><div class="blob-inner blob-drift-e"><svg viewBox="0 0 260 260"><path fill="currentColor" d="M50,130 C50,70 100,30 150,40 C200,50 230,100 210,150 C190,200 130,230 90,200 C50,170 50,190 50,130 Z"><animate attributeName="d" dur="8s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M50,130 C50,70 100,30 150,40 C200,50 230,100 210,150 C190,200 130,230 90,200 C50,170 50,190 50,130 Z;M70,110 C80,60 140,30 180,60 C220,90 220,150 190,190 C160,230 100,230 70,190 C40,150 60,160 70,110 Z;M50,130 C50,70 100,30 150,40 C200,50 230,100 210,150 C190,200 130,230 90,200 C50,170 50,190 50,130 Z"/></path></svg></div></div>
+    </div>
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Education</span>
+        <h2>Live workshops that make the material stick.</h2>
+        <p>We run interactive sessions covering budgeting, credit, and online safety, open to all students at no cost.</p>
+      </div>
+      <div class="event-card" id="education-event-card">
+        <div class="event-date">
+          <div class="event-date-block">
+            <div class="month">August</div>
+            <div class="day">15</div>
+          </div>
+          <div class="time">8:00 AM CST</div>
+        </div>
+        <div class="event-body">
+          <span class="status status-done">Completed</span>
+          <h4>Financial Literacy and Cybersecurity Workshop</h4>
+          <p style="margin-bottom:0;">A live, interactive session covering budgeting basics and how to spot online scams before they cost you. Open to all students, no experience required.</p>
+        </div>
+        <span class="event-completed-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+          Hosted live
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SIMULATIONS (pinned scroll reveal) -->
+  <section class="section section-alt pin-section sim-pin" id="simulations">
+    <div class="blob-layer" aria-hidden="true">
+      <div class="blob blob-sim-1 blob-bg" data-speed="0.08"><div class="blob-inner blob-drift-a"><svg viewBox="0 0 600 600"><path fill="currentColor" d="M320,80 C440,100 520,200 520,320 C520,440 420,540 300,540 C180,540 70,450 70,320 C70,190 180,90 300,80 C306,79 314,79 320,80 Z"><animate attributeName="d" dur="14s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M320,80 C440,100 520,200 520,320 C520,440 420,540 300,540 C180,540 70,450 70,320 C70,190 180,90 300,80 C306,79 314,79 320,80 Z;M290,100 C400,80 500,170 510,290 C520,410 430,520 310,520 C190,520 80,430 80,310 C80,190 180,110 290,100 Z;M320,80 C440,100 520,200 520,320 C520,440 420,540 300,540 C180,540 70,450 70,320 C70,190 180,90 300,80 C306,79 314,79 320,80 Z"/></path></svg></div></div>
+      <div class="blob blob-sim-2 blob-mid" data-speed="0.13"><div class="blob-inner blob-drift-b"><svg viewBox="0 0 600 600"><path fill="currentColor" d="M280,90 C400,70 520,140 550,260 C580,380 500,500 370,540 C240,580 100,520 70,400 C40,280 120,150 240,100 C253,95 267,92 280,90 Z"><animate attributeName="d" dur="12s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M280,90 C400,70 520,140 550,260 C580,380 500,500 370,540 C240,580 100,520 70,400 C40,280 120,150 240,100 C253,95 267,92 280,90 Z;M250,110 C370,100 480,180 490,300 C500,420 400,520 280,520 C160,520 50,420 60,300 C70,180 160,110 250,110 Z;M280,90 C400,70 520,140 550,260 C580,380 500,500 370,540 C240,580 100,520 70,400 C40,280 120,150 240,100 C253,95 267,92 280,90 Z"/></path></svg></div></div>
+      <div class="blob blob-sim-3 blob-fg" data-speed="0.20"><div class="blob-inner blob-drift-e"><svg viewBox="0 0 240 240"><path fill="currentColor" d="M50,120 C50,65 100,25 150,35 C200,45 220,100 200,150 C180,200 120,220 80,190 C40,160 50,175 50,120 Z"><animate attributeName="d" dur="7s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M50,120 C50,65 100,25 150,35 C200,45 220,100 200,150 C180,200 120,220 80,190 C40,160 50,175 50,120 Z;M70,100 C80,55 140,25 180,55 C220,85 220,140 190,180 C160,220 100,220 70,180 C40,140 60,145 70,100 Z;M50,120 C50,65 100,25 150,35 C200,45 220,100 200,150 C180,200 120,220 80,190 C40,160 50,175 50,120 Z"/></path></svg></div></div>
+    </div>
+    <div class="pin-sticky">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Simulations</span>
+        <h2>Learn by doing, not by reading.</h2>
+        <p>Our flagship simulation puts students in real financial and cybersecurity decision points, with no real world stakes attached.</p>
+      </div>
+
+      <div class="sim-feature reveal reveal-delay-1">
+        <div>
+          <span class="status status-live">Featured simulation</span>
+          <h3>Cybersecurity and Finance Simulation</h3>
+          <p>A gamified simulation built for high school students, covering budgeting, saving, and spending decisions alongside phishing and scam recognition scenarios modeled on real threats.</p>
+          <div class="tag-row">
+            <span class="tag">Finance</span><span class="tag">Cybersecurity</span><span class="tag">Interactive</span>
+          </div>
+          <a class="btn btn-primary" data-phase="9" href="https://financeforwardsim.netlify.app/" target="_blank" rel="noopener">
+            Launch Simulation
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 17L17 7M17 7H8M17 7V16"/></svg>
+          </a>
+        </div>
+        <div class="sim-visual">
+          <div class="sim-mock">
+            <div class="sim-mock-row" data-phase="1">
+              <div class="sim-chip" data-phase="2"><span class="sc-label">Balance</span><span class="sc-value">$1,240</span></div>
+              <div class="sim-chip" data-phase="3.5"><span class="sc-label">Saved</span><span class="sc-value">$320</span></div>
+            </div>
+            <div class="sim-chip alert" data-phase="5.5">
+              <span class="sc-label">Decision point</span>
+              <span class="sc-value"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg> Is this email a phishing attempt?</span>
+            </div>
+            <div class="sim-progress-track" data-phase="7"><div class="sim-progress-fill"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <div class="section-alt" style="padding: 0 0 100px; position:relative;">
+    <div class="container">
+      <div class="sim-feature reveal reveal-delay-1" style="margin-bottom: 28px;">
+        <div>
+          <span class="status status-live">New simulation</span>
+          <h3>Finance Forward: Life Simulation</h3>
+          <p>A twelve month financial life simulation. Choose your path, then manage income, spending, investing, and goals month by month to see how everyday choices shape your future.</p>
+          <div class="tag-row">
+            <span class="tag">Finance</span><span class="tag">Investing</span><span class="tag">Interactive</span>
+          </div>
+          <a class="btn btn-primary" href="https://vexova.github.io/FF_GAME/" target="_blank" rel="noopener">
+            Launch Simulation
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 17L17 7M17 7H8M17 7V16"/></svg>
+          </a>
+        </div>
+        <div class="sim-visual">
+          <div class="sim-mock">
+            <div class="sim-mock-row">
+              <div class="sim-chip"><span class="sc-label">Month</span><span class="sc-value">4 of 12</span></div>
+              <div class="sim-chip"><span class="sc-label">Invested</span><span class="sc-value">$850</span></div>
+            </div>
+            <div class="sim-chip alert">
+              <span class="sc-label">Decision point</span>
+              <span class="sc-value"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg> Rent went up $150. Cut spending or use savings?</span>
+            </div>
+            <div class="sim-progress-track"><div class="sim-progress-fill" style="width:33%;"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-muted card-wide reveal reveal-delay-2">
+        <div class="card-wide-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 118 0v4"/></svg></div>
+        <div>
+          <span class="status status-soon">In development</span>
+          <h3>Future simulations</h3>
+          <p style="margin:0;">We're building out additional simulation modules as part of our ongoing educational and technology projects. New modules will appear here as they go live.</p>
+        </div>
+      </div>
+    </div>
+    <div class="section-divider" aria-hidden="true">
+      <svg viewBox="0 0 1440 80" preserveAspectRatio="none"><path fill="var(--bg)" d="M0,45 C260,10 420,70 660,45 C900,20 1040,70 1260,40 C1340,28 1400,35 1440,38 L1440,80 L0,80 Z"/></svg>
+    </div>
+  </div>
+
+  <!-- INSIGHTS / MEDIUM -->
+  <section class="section section-tight" id="insights">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Insights</span>
+        <h2>Writing on money, safety, and what we're learning.</h2>
+        <p>Longer form articles from the Finance Forward Network team, published on Medium.</p>
+      </div>
+      <div class="grid grid-3" id="insights-grid"></div>
+      <div class="empty-state reveal" id="insights-empty" style="display:none;">
+        <h4>Our first articles are on the way.</h4>
+        <p style="margin:10px auto 0;">Check back soon, or follow along on Instagram in the meantime.</p>
+        <div style="margin-top:20px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+          <a class="btn btn-ghost btn-sm" id="medium-profile-link" href="#" style="display:none;" target="_blank" rel="noopener">Read on Medium</a>
+          <a class="btn btn-ghost btn-sm" data-instagram-link href="#" target="_blank" rel="noopener">Follow on Instagram</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLLABORATIONS -->
+  <section class="section section-alt" id="collaborations">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Collaborations</span>
+        <h2>Organizations we've worked with.</h2>
+        <p>We're always open to partnering with schools, nonprofits, and organizations that share our mission. This section grows as new collaborations are confirmed.</p>
+      </div>
+      <div class="grid grid-3" id="collab-grid"></div>
+      <div class="empty-state reveal" id="collab-empty" style="display:none;">
+        <h4>New partnerships are in the works.</h4>
+        <p style="margin:10px auto 0;">Interested in collaborating with Finance Forward Network? Reach out through our contact section below.</p>
+        <div style="margin-top:20px;">
+          <a class="btn btn-ghost btn-sm" href="#contact">Get in touch</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- JOIN LEADERSHIP -->
+  <section class="section" id="join">
+    <div class="container">
+      <div class="join-hero reveal-scale">
+        <div class="blob-layer" aria-hidden="true">
+          <div class="blob blob-join-1 blob-bg" data-speed="0.06"><div class="blob-inner blob-drift-c"><svg viewBox="0 0 600 600"><path fill="currentColor" d="M320,80 C440,100 520,200 520,320 C520,440 420,540 300,540 C180,540 70,450 70,320 C70,190 180,90 300,80 C306,79 314,79 320,80 Z"><animate attributeName="d" dur="13s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M320,80 C440,100 520,200 520,320 C520,440 420,540 300,540 C180,540 70,450 70,320 C70,190 180,90 300,80 C306,79 314,79 320,80 Z;M280,100 C400,90 500,190 500,310 C500,430 400,530 280,520 C160,510 70,410 80,290 C90,170 190,100 280,100 Z;M320,80 C440,100 520,200 520,320 C520,440 420,540 300,540 C180,540 70,450 70,320 C70,190 180,90 300,80 C306,79 314,79 320,80 Z"/></path></svg></div></div>
+          <div class="blob blob-join-2 blob-fg" data-speed="0.15"><div class="blob-inner blob-drift-d"><svg viewBox="0 0 260 260"><path fill="currentColor" d="M50,130 C50,70 100,30 150,40 C200,50 230,100 210,150 C190,200 130,230 90,200 C50,170 50,190 50,130 Z"><animate attributeName="d" dur="9s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M50,130 C50,70 100,30 150,40 C200,50 230,100 210,150 C190,200 130,230 90,200 C50,170 50,190 50,130 Z;M70,110 C80,60 140,30 180,60 C220,90 220,150 190,190 C160,230 100,230 70,190 C40,150 60,160 70,110 Z;M50,130 C50,70 100,30 150,40 C200,50 230,100 210,150 C190,200 130,230 90,200 C50,170 50,190 50,130 Z"/></path></svg></div></div>
+        </div>
+        <span class="eyebrow on-dark">Join our leadership team</span>
+        <h2 style="max-width:20ch;">Help build what financial and cyber education should look like.</h2>
+        <p style="max-width:56ch;">Finance Forward Network is entirely student run, and we're actively growing. If you care about financial literacy, cybersecurity, or building things other students actually use, we want to hear from you. No prior experience required.</p>
+        <a class="btn btn-primary btn-cta" href="https://docs.google.com/forms/d/e/1FAIpQLSdA3MazrX15SwbarwIDXdaefuyKzOkFEkI0WYdf3I9Tg4y8VA/viewform" target="_blank" rel="noopener">Apply for a Leadership Role</a>
+
+        <div class="grid grid-3 role-grid" id="roles-grid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section" id="contact">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Contact</span>
+        <h2>Get in touch.</h2>
+        <p>Questions, partnership ideas, or press inquiries. Reach us however is easiest.</p>
+      </div>
+      <div class="contact-grid">
+        <a class="contact-card reveal reveal-delay-1" data-email-link href="#">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M4 6l8 7 8-7"/></svg>
+          </div>
+          <div>
+            <h5>Email</h5>
+            <span data-email-label>Message us on Instagram</span>
+          </div>
+          <span class="cc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H8M17 7V16"/></svg></span>
+        </a>
+        <a class="contact-card reveal reveal-delay-2" data-instagram-link href="https://www.instagram.com/financeforwardnetwork/" target="_blank" rel="noopener">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+          </div>
+          <div>
+            <h5>Instagram</h5>
+            <span>@financeforwardnetwork</span>
+          </div>
+          <span class="cc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H8M17 7V16"/></svg></span>
+        </a>
+        <a class="contact-card reveal reveal-delay-3" data-linktree-link href="https://linktr.ee/finance.forward99" target="_blank" rel="noopener">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M5 9l7-7 7 7M5 15l7 7 7-7"/></svg>
+          </div>
+          <div>
+            <h5>Linktree</h5>
+            <span>All our links in one place</span>
+          </div>
+          <span class="cc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H8M17 7V16"/></svg></span>
+        </a>
+        <a class="contact-card reveal reveal-delay-4" href="https://docs.google.com/forms/d/e/1FAIpQLSdA3MazrX15SwbarwIDXdaefuyKzOkFEkI0WYdf3I9Tg4y8VA/viewform" target="_blank" rel="noopener">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div>
+            <h5>Leadership Applications</h5>
+            <span>Apply to join the team</span>
+          </div>
+          <span class="cc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H8M17 7V16"/></svg></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#home" class="brand">
+          <img src="assets/brand/logo.jpg" alt="Finance Forward Network logo" class="brand-logo">
+          <span class="brand-word">Finance Forward Network<span>Est. 2025</span></span>
+        </a>
+        <p>Financial confidence and cyber awareness, built for students, by students.</p>
+        <div class="footer-social">
+          <a class="icon-link" data-instagram-link href="https://www.instagram.com/financeforwardnetwork/" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+          </a>
+          <a class="icon-link" data-linktree-link href="https://linktr.ee/finance.forward99" target="_blank" rel="noopener" aria-label="Linktree">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M5 9l7-7 7 7M5 15l7 7 7-7"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Programs</h5>
+        <ul>
+          <li><a href="#research">Research</a></li>
+          <li><a href="#education">Education</a></li>
+          <li><a href="#simulations">Simulations</a></li>
+          <li><a href="#insights">Insights</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Organization</h5>
+        <ul>
+          <li><a href="#about">About</a></li>
+          <li><a href="#collaborations">Collaborations</a></li>
+          <li><a href="#join">Join Us</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Take Action</h5>
+        <ul>
+          <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSdA3MazrX15SwbarwIDXdaefuyKzOkFEkI0WYdf3I9Tg4y8VA/viewform" target="_blank" rel="noopener">Leadership Application</a></li>
+          <li><a href="https://forms.gle/HcCfE6gbRhLTy4Ly8" target="_blank" rel="noopener">Research Survey</a></li>
+          <li><a href="https://financeforwardsim.netlify.app/" target="_blank" rel="noopener">Launch the Simulation</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>Copyright 2025 to 2026 Finance Forward Network. Founded 2025.</span>
+      <span>Site built and maintained by the Finance Forward Network team.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>
